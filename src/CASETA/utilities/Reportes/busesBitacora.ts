@@ -143,7 +143,6 @@ export const getReporteEcosBitacora = async({
         throw Error(error)
     }
 
-
     //? Ajustar data de la consulta para mostrarla en la tabla
     const data = res.map( (reg, i) => {
         const data = {
@@ -160,8 +159,9 @@ export const getReporteEcosBitacora = async({
             cc1:         reg.ruta_cc,
             motivo1:     reg.motivo,
             motivo_descripcion1: reg.motivo_desc,
+            // descripcionRuta: reg.,
         }
-
+        
         let complemento = {}
         if(consultaTipo === 3){
             complemento = {

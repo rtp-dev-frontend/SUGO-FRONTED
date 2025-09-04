@@ -3,7 +3,7 @@ import  './styles.css';
 import { Button, ButtonProps } from 'primereact/button';
 
 import { Data2PostNewEcoState, FetchPVestados, Result } from './interfaces';
-import { TablasDespachosRecepciones, TablaEcosEnRuta, TablaPVestado, PVestadosMotivos, PVestadosRutas, COLS, rowClassName } from './components';
+import { TablasDespachosRecepciones, TablaEcosEnRuta, TablaPVestado, PVestadosMotivos, PVestadosRutas, SalidaRutas, COLS, rowClassName } from './components';
 import { FormNewEcoEstado, SubmitState } from './components/FormNewEcoEstado';
 
 import { UseFetchGet, UseFetchPost } from '../../shared/helpers-HTTP'
@@ -24,7 +24,7 @@ import { TablaCRUD } from '../../shared/components/Tabla';
 const API = import.meta.env.VITE_SUGO_BackTS
 
 
-const OPTS_MODS = [ 
+export const OPTS_MODS = [ 
     { name: 'OC', value: 0},
     { name: 'M01', value: 1},
     { name: 'M02', value: 2},
@@ -201,6 +201,7 @@ const botonesReportes: ButtonProps[] = [
     { label: 'Extintores' },
     { label: 'Economicos' },
     { label: 'Rutas SWAP' },
+    { label: 'Salida por Ruta' },
 ]
 
 
@@ -215,6 +216,7 @@ const DialogReportes = () => {
         <ReportesCaseta extintores />,
         <EcosConSuModalidad />,
         <PVestadosRutas />,
+        <SalidaRutas />
     ]
 
     // Eliminar elemento "clearFilter" de las tablas creadas con <tablaCRUD>
