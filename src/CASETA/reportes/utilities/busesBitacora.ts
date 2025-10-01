@@ -160,6 +160,7 @@ export const getReporteEcosBitacora = async({
             motivo1:     reg.pv_estados_motivo.desc,
             motivo_descripcion1: reg.motivo_desc,
             modulo: reg.modulo_origen,
+            estatus: reg.estatus,
         }
 
         let complemento = {}

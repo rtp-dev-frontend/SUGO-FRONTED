@@ -22,7 +22,7 @@ import { MenuItem } from 'primereact/menuitem';
 export const Header = ({links=undefined}:{links?: any[]}) => {
 
   const { user, logout } = useAuthStore()
-  const { sugo12cas, sugo12cum, sugo12pru, sugo12rol } = useAuthStore( state => state.permisosSUGO )
+  const { sugo12cas, sugo12cum, sugo12pru, sugo12rol, sugo12capRol } = useAuthStore( state => state.permisosSUGO )
   const navigate = useNavigate();
   
   const allMenu: MenuItem[] = []
@@ -51,14 +51,23 @@ export const Header = ({links=undefined}:{links?: any[]}) => {
       navigate('/caseta');
     }  
   }) 
-  // pruebas
-  if(sugo12pru) allMenu.push({
-    label: 'Pruebas',
-    icon: 'pi pi-cog',
+  // NUEVO ROL
+  if(sugo12rol) allMenu.push({
+    label: 'ROL',
+    icon: 'pi pi-flag',
     command: () => {
-      navigate('/pruebas');
+      navigate('/rolNuevo');
     }  
   }) 
+  // // pruebas
+  // if(sugo12pru) allMenu.push({
+  //   label: 'Pruebas',
+  //   icon: 'pi pi-cog',
+  //   command: () => {
+  //     navigate('/pruebas');
+  //   }  
+  // }) 
+ 
 
 
   const items = links || allMenu

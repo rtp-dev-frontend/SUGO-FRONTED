@@ -4,4 +4,5 @@ export * from './PVestado_1eco';
 export * from './TablasDespachosRecepciones';
 export * from './TablaEcosEnRuta';
 export * from './TablaPVestado';
-export * from './SalidaRutas';
+export * from './SalidasporDia';
+export * from './SalidasRutas';

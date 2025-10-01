@@ -3,7 +3,7 @@ import  './styles.css';
 import { Button, ButtonProps } from 'primereact/button';
 
 import { Data2PostNewEcoState, FetchPVestados, Result } from './interfaces';
-import { TablasDespachosRecepciones, TablaEcosEnRuta, TablaPVestado, PVestadosMotivos, PVestadosRutas, SalidaRutas, COLS, rowClassName } from './components';
+import { TablasDespachosRecepciones, TablaEcosEnRuta, TablaPVestado, PVestadosMotivos, PVestadosRutas, SalidasporDia, SalidasRutas, COLS, rowClassName } from './components';
 import { FormNewEcoEstado, SubmitState } from './components/FormNewEcoEstado';
 
 import { UseFetchGet, UseFetchPost } from '../../shared/helpers-HTTP'
@@ -201,7 +201,8 @@ const botonesReportes: ButtonProps[] = [
     { label: 'Extintores' },
     { label: 'Economicos' },
     { label: 'Rutas SWAP' },
-    { label: 'Salida por Ruta' },
+    { label: 'Salidas por Día' },
+    { label: 'Salidas por Ruta' },
 ]
 
 
@@ -216,7 +217,8 @@ const DialogReportes = () => {
         <ReportesCaseta extintores />,
         <EcosConSuModalidad />,
         <PVestadosRutas />,
-        <SalidaRutas />
+        <SalidasporDia />,
+        <SalidasRutas />
     ]
 
     // Eliminar elemento "clearFilter" de las tablas creadas con <tablaCRUD>
@@ -311,6 +313,8 @@ const ReportePVestados = () => {
                     estatus: ['ELIMINADO', 'ACTUAL', 'PREVIO'][reg.estatus],
                     eco_estatus: {1: 'DISPONIBLE', 2: 'NO DISPONIBLE'}[reg.eco_estatus] as any,
                     eco_tipo_desc: ['-', 'PLANTA', 'POSTURA'][reg.eco_tipo||0] as any,  
+                    // Solo muestra "(no disponible)" si origen está vacío/nulo/undefined
+                    origen: !reg.origen ? '(no disponible)' : reg.origen,
                     momento: new Date(reg.momento).toLocaleString()
                 })),
                 loading: false,

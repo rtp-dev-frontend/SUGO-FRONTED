@@ -47,23 +47,14 @@ export const CargarNuevoRol = () => {
 
     useEffect(() => {
         UseFetchGet(`${api_base}/api/periodos`)
-            .then(res => {
-                console.log('Respuesta de la API:', res); // Log temporal para inspeccionar los datos
-                const d = new Date();
-                const periodoActual = res.findIndex(({ fecha_inicio, fecha_fin }) =>
-                    new Date(fecha_inicio) < d && d < new Date(fecha_fin)
-                );
-                const n = periodoActual === 0 ? 0 : 1;
-                const periodosToShow = res.slice(periodoActual - n, periodoActual + 2);
-                setPeriodoOpt(
-                    periodosToShow.map(obj => ({
-                        ...obj,
-                        self: { ...obj },
-                        name: `${`${obj.serial}`.padStart(2, '0')} - del ${obj.fecha_inicio} al ${obj.fecha_fin}`
-                    }))
-                );
-            })
-            .catch(err => console.error('Error al cargar los periodos:', err));
+        .then( res => {
+            const d = new Date()
+            const periodoActual = res.findIndex( ({fecha_inicio, fecha_fin}) => new Date(fecha_inicio) < d && d < new Date(fecha_fin) )
+            const n = (periodoActual === 0) ? 0 : 1;
+            const periodosToShow = res.slice( periodoActual-n, periodoActual+2 );
+            setPeriodoOpt(periodosToShow.map( obj => ({...obj, self: {...obj}, name: `${`${obj.serial}`.padStart(2, '0')} - del ${obj.fecha_inicio} al ${obj.fecha_fin}`}) )) 
+        })
+        .catch( err => console.log(err) )
     }, [])
 
 
