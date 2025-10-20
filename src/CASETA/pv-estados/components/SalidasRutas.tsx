@@ -73,7 +73,9 @@ export const SalidasRutas = () => {
 				tipo: 1, 
 			});
 			
-			setData(res.data || []);
+			// Aplicar los mismos filtros que en SalidasporDia: motivo1 === 'SERVICIO' y modalidad1 !== 'METROBÚS' && modalidad1 !== 'NOCHEBÚS'
+			const filtrados = (res.data || []).filter(reg => reg.motivo1 === 'SERVICIO' && reg.modalidad1 !== 'METROBÚS' && reg.modalidad1 !== 'NOCHEBÚS');
+			setData(filtrados);
 			setError('');
 			setBusquedaRealizada(true);
 			form.reset();
