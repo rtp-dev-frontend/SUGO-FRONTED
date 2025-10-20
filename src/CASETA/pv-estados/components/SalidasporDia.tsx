@@ -105,7 +105,7 @@ export const SalidasporDia = () => {
             })
             let dataAgrupada: (TableData & { id: number, modulo?: number })[] = [];
             // Filtrar por motivo y modalidad para ambos filtros
-            const filtrados = res.data.filter(reg => reg.motivo1 === 'SERVICIO' && reg.modalidad1 !== 'METROBÚS');
+            const filtrados = res.data.filter(reg => reg.motivo1 === 'SERVICIO' && reg.modalidad1 !== 'METROBÚS' && reg.modalidad1 !== 'NOCHEBÚS');
             setFiltradosData(filtrados); // Usar solo una fuente de datos para todo
 
             // Por defecto, solo filtra por el turno seleccionado para la tabla principal
@@ -446,6 +446,8 @@ export const SalidasporDia = () => {
                                     return turnosToShow.map(turno => {
                                         const labels = rutas;
                                         const totals = rutas.map(ruta => filtrarPorTurno(agrupado[ruta], turno).length);
+                                        // const totalSalidasPorRuta = totals.reduce((acc, curr) => acc + curr, 0);
+                                        // console.log(`Total de salidas en módulo ${moduloActual} para turno ${turno}:`, totalSalidasPorRuta);
                                         const turnoLabel = turno === 't1' ? 'Primer turno (4:59am - 10:00am)' : turno === 't2' ? 'Segundo turno (4:59am - 5:00pm)' : 'Tercer turno (4:59am - 8:00pm)';
                                         const color = turno === 't1' ? '#66BB6A' : turno === 't2' ? '#4e1ea0ff' : '#FFA726';
                                         return (
