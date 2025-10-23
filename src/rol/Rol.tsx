@@ -5,7 +5,7 @@ import { Container, Header } from '../shared/components'
 import useAuthStore from '../shared/auth/useAuthStore';
 import { SugoInBg } from '../shared/components/Mensajes';
 // Componentes
-import { RolFormulario } from './components/';
+import { RolFormulario } from './cargar-rol/components/';
 
 
 
