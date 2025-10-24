@@ -3,12 +3,12 @@ import { Button } from 'primereact/button';
 import { PeriodoSelector } from './PeriodoSelector';
 import { ModuloSelector } from './ModuloSelector';
 import { ErroresRol } from './ErroresRol';
-import { RolesEnviados } from './RolesEnviados';
 import { BotonesFormulario } from './BotonesFormulario';
 import { BotonDescargaPlantilla } from './BotonDescargaPlantilla';
 import { useRolFormulario } from '../hooks/useRolFormulario';
 import { useArchivoHandlers } from '../hooks/useArchivoHandlers';
 import { useSelectorHandlers } from '../hooks/useSelectorHandlers';
+import { RolesCargados } from './RolesCargados';
 
 
 
@@ -117,17 +117,23 @@ export const RolFormulario = () => {
                 <BotonDescargaPlantilla />
             </div>
 
-            {/* Componente para mostrar los roles enviados */}
-            <RolesEnviados periodo={periodo} modulo={modulo?.name?.slice(2)} deps={[rolesSended]} />
+            <div style={{ display: 'flex', gap: '50px', alignItems: 'flex-start' }}>
+                {/* Componente para mostrar roles cargados por módulo */}
+                <div style={{ flex: 1 }}>
+                    <RolesCargados periodo={periodo} />
+                </div>
+                {/* Componente para mostrar errores y estado de validación */}
+                <div style={{ maxWidth: 700, flex: 0.6 }}>
+                    <ErroresRol
+                        errores={errores}
+                        showErr={showErr}
+                        isLoading={isLoading}
+                        validatingData={validatingData}
+                        cont={cont}
+                    />
+                </div>
 
-            {/* Componente para mostrar errores y estado de validación */}
-            <ErroresRol
-                errores={errores}
-                showErr={showErr}
-                isLoading={isLoading}
-                validatingData={validatingData}
-                cont={cont}
-            />
+            </div>
         </div>
     );
 };
