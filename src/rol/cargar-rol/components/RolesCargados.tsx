@@ -21,7 +21,6 @@ const MODULOS = [1, 2, 3, 4, 5, 6, 7];
 // Componente para mostrar las tablas de cada turno y día (visualización tipo Excel)
 // Ahora incluye el chequeo de registros en caseta para mostrar si el operador/económico fue capturado en el periodo.
 const TablasTurno: React.FC<{ data: any, turno: number, periodo: any }> = ({ data, turno, periodo }) => {
-	// ...documentación: muestra los horarios por turno y por día en tablas separadas...
 	const dias = ["Lunes a Viernes", "Sabado", "Domingo"];
 	const encabezados = [
 		{ key: "hora_inicio", label: "Hora inicio" },
@@ -35,18 +34,17 @@ const TablasTurno: React.FC<{ data: any, turno: number, periodo: any }> = ({ dat
 	const operador = (data.operadores_servicios || []).find((op: any) => Number(op.turno) === turno);
 	if (!operador) return null;
 
-	// Estado para saber si hay registros en caseta (capturado/no-capturado)
 	const [casetaCaptura, setCasetaCaptura] = useState<'capturado' | 'no-capturado' | null>(null);
+	const [casetaRegistros, setCasetaRegistros] = useState<any[]>([]);
 
 	React.useEffect(() => {
-		// Solo busca si hay operador y económico y periodo válido
 		const eco = data.economico;
 		const op_cred = operador.operador;
 		if (!eco || !op_cred || !periodo?.fecha_inicio || !periodo?.fecha_fin) {
 			setCasetaCaptura(null);
+			setCasetaRegistros([]);
 			return;
 		}
-		// Consulta registros de caseta para ese operador y eco en el rango de fechas
 		getCasetaRegistros({
 			fecha_inicio: periodo.fecha_inicio,
 			fecha_fin: periodo.fecha_fin,
@@ -54,18 +52,99 @@ const TablasTurno: React.FC<{ data: any, turno: number, periodo: any }> = ({ dat
 			op_cred,
 			tipo: 1
 		}).then(registros => {
-			// Si hay al menos un registro, se considera capturado
 			setCasetaCaptura(registros.length > 0 ? 'capturado' : 'no-capturado');
+			setCasetaRegistros(registros);
 		});
 	}, [data.economico, operador.operador, periodo]);
+
+	const descansos = Array.isArray(operador.descansos) ? operador.descansos.map((d: string) => d.trim().toLowerCase()) : [];
+	const descansaSabado = descansos.includes('s') || descansos.includes('sábado') || descansos.includes('sabado');
+	const descansaDomingo = descansos.includes('d') || descansos.includes('domingo');
+
+	// Helper para obtener día de la semana en español
+	const getDiaSemana = (fecha: string) => {
+		const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+		const d = new Date(fecha);
+		return dias[d.getDay()];
+	};
+
+	// Helper para comparar hora de salida vs hora inicio (tolerancia 5 minutos, amarillo hasta 20 min, rojo después)
+	const compararHoraSalida = (horaInicio: string, momento: string) => {
+		if (!horaInicio || !momento) return { status: 'sin-dato', minutos: null };
+		const fechaSalida = new Date(momento);
+		const horaInicioArr = horaInicio.split(':');
+		const fechaComparar = new Date(fechaSalida);
+		fechaComparar.setHours(Number(horaInicioArr[0]), Number(horaInicioArr[1]), 0, 0);
+
+		const diffMs = fechaSalida.getTime() - fechaComparar.getTime();
+		const diffMin = Math.round(diffMs / 60000);
+
+		if (diffMin < -5) return { status: 'adelantado', minutos: diffMin }; // Azul
+		if (diffMin <= 5) return { status: 'a-tiempo', minutos: diffMin }; // Verde
+		if (diffMin > 5 && diffMin <= 20) return { status: 'retraso-moderado', minutos: diffMin }; // Amarillo
+		if (diffMin > 20) return { status: 'retraso', minutos: diffMin }; // Rojo
+		return { status: 'sin-dato', minutos: diffMin };
+	};
+
+	// Calcular días laborados del periodo (mes completo menos sábados y domingos)
+	const getDiasLaborados = () => {
+		if (!periodo?.fecha_inicio || !periodo?.fecha_fin) return 0;
+		const fechaIni = new Date(periodo.fecha_inicio);
+		const fechaFin = new Date(periodo.fecha_fin);
+
+		// Normaliza a año, mes, día
+		const y1 = fechaIni.getFullYear(), m1 = fechaIni.getMonth(), d1 = fechaIni.getDate();
+		const y2 = fechaFin.getFullYear(), m2 = fechaFin.getMonth(), d2 = fechaFin.getDate();
+
+		let diasLaborados = 0;
+		let d = new Date(y1, m1, d1);
+		const end = new Date(y2, m2, d2);
+
+		while (d <= end) {
+			const dia = d.getDay(); // 0=Domingo, 6=Sábado
+			if (dia !== 0 && dia !== 6) {
+				diasLaborados++;
+			}
+			d.setDate(d.getDate() + 1);
+		}
+		return diasLaborados;
+	};
+
+	// Contar días únicos con registro en caseta
+	const getDiasCumplidos = () => {
+		const diasUnicos = new Set(
+			casetaRegistros.map(reg => {
+				const fecha = new Date(reg.momento);
+				fecha.setHours(0,0,0,0);
+				return fecha.getTime();
+			})
+		);
+		return diasUnicos.size;
+	};
+
+	const diasLaborados = getDiasLaborados();
+	const diasCumplidos = getDiasCumplidos();
+	const porcentaje = diasLaborados > 0 ? Math.round((diasCumplidos / diasLaborados) * 100) : 0;
 
 	return (
 		<div key={turno} style={{ marginBottom: 32 }}>
 			<div style={{ fontWeight: 600, marginBottom: 8 }}>
 				Turno {turno} — Operador: {operador.operador} — Descansos: {Array.isArray(operador.descansos) ? operador.descansos.join(', ') : '-'}
+				{diasLaborados > 0 && (
+					<span style={{ marginLeft: 16, fontWeight: 400, color: '#1976d2', fontSize: 15 }}>
+						Cumplimiento: <b>{porcentaje}%</b> ({diasCumplidos}/{diasLaborados} días)
+					</span>
+				)}
 			</div>
-			<div style={{ display: 'flex', gap: 16 }}>
+			{/* Centralizar tablas aunque falte alguna */}
+			<div style={{ display: 'flex', justifyContent: 'center', gap: 16 }}>
 				{dias.map(dia => {
+					if (
+						(dia === "Sabado" && descansaSabado) ||
+						(dia === "Domingo" && descansaDomingo)
+					) {
+						return null;
+					}
 					const horario = (data.horarios || []).find((h: any) => h.turno === turno && h.dias_servicios === dia);
 					return (
 						<table key={dia} style={{ width: 260, borderCollapse: 'collapse', fontSize: 13, marginBottom: 0 }}>
@@ -90,12 +169,78 @@ const TablasTurno: React.FC<{ data: any, turno: number, periodo: any }> = ({ dat
 					);
 				})}
 			</div>
-			{/* Indicador de captura caseta debajo de la tabla */}
+			{/* Indicador de captura caseta debajo de las tablas de horarios */}
 			<div style={{ marginTop: 8, textAlign: 'center', fontWeight: 600 }}>
 				{casetaCaptura === 'capturado' && <span style={{ color: '#43a047' }}>Capturado en caseta</span>}
 				{casetaCaptura === 'no-capturado' && <span style={{ color: '#d32f2f' }}>No capturado en caseta</span>}
 				{casetaCaptura === null && <span style={{ color: '#888' }}>Sin información de caseta</span>}
 			</div>
+			{/* Segunda tabla: registros de caseta, abajo y con formato solicitado */}
+			{casetaRegistros.length > 0 && (
+				<div style={{ marginTop: 16 }}>
+					<table style={{ width: 800, borderCollapse: 'collapse', fontSize: 13, background: '#f9f9f9', margin: '0 auto' }}>
+						<thead>
+							<tr style={{ background: '#f7f7f7' }}>
+								<th style={{ border: '1px solid #eee', padding: 6 }}>Día</th>
+								<th style={{ border: '1px solid #eee', padding: 6 }}>Fecha</th>
+								<th style={{ border: '1px solid #eee', padding: 6 }}>Hora salida</th>
+								<th style={{ border: '1px solid #eee', padding: 6 }}>Ruta</th>
+								<th style={{ border: '1px solid #eee', padding: 6 }}>Ruta modalidad</th>
+								<th style={{ border: '1px solid #eee', padding: 6 }}>Turno</th>
+								<th style={{ border: '1px solid #eee', padding: 6 }}>¿Salió a tiempo?</th>
+							</tr>
+						</thead>
+						<tbody>
+							{casetaRegistros.map((reg, idx) => {
+								const fechaObj = reg.momento ? new Date(reg.momento) : null;
+								const diaSemana = fechaObj ? getDiaSemana(reg.momento) : '-';
+								const fecha = fechaObj ? fechaObj.toLocaleDateString() : '-';
+								const horaSalida = fechaObj ? fechaObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-';
+
+								// Buscar horario de ese día
+								let horarioDia = null;
+								if (diaSemana === 'Domingo') {
+									horarioDia = (data.horarios || []).find((h: any) => h.turno === turno && h.dias_servicios === 'Domingo');
+								} else if (diaSemana === 'Sabado' || diaSemana === 'Sábado') {
+									horarioDia = (data.horarios || []).find((h: any) => h.turno === turno && h.dias_servicios === 'Sabado');
+								} else {
+									horarioDia = (data.horarios || []).find((h: any) => h.turno === turno && h.dias_servicios === 'Lunes a Viernes');
+								}
+								const horaInicio = horarioDia ? horarioDia.hora_inicio : null;
+								const comparacion = compararHoraSalida(horaInicio, reg.momento);
+
+								let color = '#888';
+								let texto = 'Sin dato';
+								if (comparacion.status === 'a-tiempo') {
+									color = '#43a047'; // Verde
+									texto = 'A tiempo';
+								} else if (comparacion.status === 'retraso-moderado') {
+									color = '#fbc02d'; // Amarillo
+									texto = `Retraso moderado (${comparacion.minutos} min)`;
+								} else if (comparacion.status === 'retraso') {
+									color = '#d32f2f'; // Rojo
+									texto = `Retraso (${comparacion.minutos} min)`;
+								} else if (comparacion.status === 'adelantado') {
+									color = '#1976d2'; // Azul
+									texto = `Adelantado (${comparacion.minutos} min)`;
+								}
+
+								return (
+									<tr key={idx}>
+										<td style={{ border: '1px solid #eee', padding: 6 }}>{diaSemana}</td>
+										<td style={{ border: '1px solid #eee', padding: 6 }}>{fecha}</td>
+										<td style={{ border: '1px solid #eee', padding: 6 }}>{horaSalida}</td>
+										<td style={{ border: '1px solid #eee', padding: 6 }}>{reg.ruta || '-'}</td>
+										<td style={{ border: '1px solid #eee', padding: 6 }}>{reg.ruta_modalidad || '-'}</td>
+										<td style={{ border: '1px solid #eee', padding: 6 }}>{reg.op_turno || '-'}</td>
+										<td style={{ border: '1px solid #eee', padding: 6, color, fontWeight: 600 }}>{texto}</td>
+									</tr>
+								);
+							})}
+						</tbody>
+					</table>
+				</div>
+			)}
 		</div>
 	);
 };
@@ -120,6 +265,9 @@ const ModalGlosario: React.FC<{ open: boolean, onClose: () => void, data: any, t
 				padding: 24,
 				minWidth: 900,
 				maxWidth: 1400,
+				width: '90vw',
+				maxHeight: '90vh',
+				overflowY: 'auto', // Habilita scroll vertical interno
 				boxShadow: '0 2px 24px 0 rgba(0, 255, 42, 0.25)',
 				border: '2px solid #3c873fff',
 				position: 'relative'
