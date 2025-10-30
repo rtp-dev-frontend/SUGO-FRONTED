@@ -13,6 +13,8 @@
  *    avanzados o debugging.
  */
 export interface RolFormularioState {
+    fileInputKey: number;
+    showSuccess: boolean;
     periodo: any;
     setPeriodo: (p: any) => void;
     periodos: any[];
@@ -21,14 +23,14 @@ export interface RolFormularioState {
     modulos: any[];
     excel: any; // Archivo cargado
     setExcel: (e: any) => void; // Función para establecer archivo
-    errores: any[];
+    errores: Record<string, any[]>; // Cambia el tipo de errores a un objeto
     error: string;
     isLoading: boolean;
     validatingData: boolean;
     canUpload: boolean;
     showErr: boolean;
     cont: number;
-    sendData: () => void;
+    sendData: (excelData?: any) => Promise<{ ok: boolean }>;// <-- Cambio aquí
     limpiarFormulario: () => void;
     rolesSended: any[];
     servicios?: any[];

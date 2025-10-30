@@ -28,7 +28,7 @@ export function useRolFormulario(): RolFormularioState {
   const [jornadasExcepcionales, setJornadasExcepcionales] = useState<any[]>([]); // Estado para las jornadas excepcionales
   const [infoGeneral, setInfoGeneral] = useState<Record<string, any>>({});
   const [resultadosPorHoja, setResultadosPorHoja] = useState<any[]>([]);
-  const [errores, setErrores] = useState<any[]>([]); // Array de errores de validación
+  const [errores, setErrores] = useState<Record<string, any[]>>({}); // Cambia el tipo a un objeto
   const [error, setError] = useState<string>(""); // Mensaje de error general
   const [isLoading, setIsLoading] = useState<boolean>(false); // Estado de carga (loading)
   const [validatingData, setValidatingData] = useState<boolean>(false); // Estado de validación de datos
@@ -37,6 +37,9 @@ export function useRolFormulario(): RolFormularioState {
   const [cont, setCont] = useState<number>(0); // Contador auxiliar
   const [rolesSended, setRolesSended] = useState<any[]>([]); // Array de roles enviados
   const { credencial: credencial_usuario, modulo: modulo_usuario } = useAuthStore((store) => store.user); //obtienne credencial y modulo del usuario autenticado
+ // Estado para forzar el reset visual del input file y mensaje de éxito
+  const [fileInputKey, setFileInputKey] = useState(0);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   // Cargar opciones del módulo usando el servicio
   useEffect(() => {
@@ -83,55 +86,68 @@ export function useRolFormulario(): RolFormularioState {
 
 
   // Envia el rol completo al backend
-  const sendData = async (excelData?: any) => {
+  const sendData = async (excelData?: any): Promise<{ ok: boolean }> => {
     try {
-      setError("");
-      setErrores([]);
-      setShowErr(false);
-      setValidatingData(true);
-      // Procesar por hoja y guardar en un array
-      const hojas = await parsearHojaCompleta(excelData ?? excel, true);
-      const hojasEstructuradas = hojas.map(({ nombre, filas }) => {
-        const estructuraHoja = estructurarDatosDesdeFilas(filas);
-        return {
-          nombre,
-          encabezado: estructuraHoja.encabezado,
-          servicios: estructuraHoja.servicios,
-          cubredescansos: estructuraHoja.cubredescansos,
-          jornadasExcepcionales: estructuraHoja.jornadasExcepcionales,
-        };
-      });
+        setError("");
+        setErrores({}); // Ahora es válido porque errores es un objeto
+        setShowErr(false);
+        setValidatingData(true);
 
-      await cargarRolCompleto({
-        nombre_archivo: excel?.name,
-        subido_por: credencial_usuario,
-        hojas: hojasEstructuradas,
-        periodo,
-        modulo
-      });
-      // Si no hay error, limpiar errores y mostrar ok
-      setErrores([]);
-      setShowErr(true);
+        const hojas = await parsearHojaCompleta(excelData ?? excel, true);
+        const hojasEstructuradas = hojas.map(({ nombre, filas }) => {
+            const estructuraHoja = estructurarDatosDesdeFilas(filas);
+            return {
+                nombre,
+                encabezado: estructuraHoja.encabezado,
+                servicios: estructuraHoja.servicios,
+                cubredescansos: estructuraHoja.cubredescansos,
+                jornadasExcepcionales: estructuraHoja.jornadasExcepcionales,
+            };
+        });
+
+        await cargarRolCompleto({
+            nombre_archivo: excel?.name,
+            subido_por: credencial_usuario,
+            modulo_usuario: modulo_usuario,
+            hojas: hojasEstructuradas,
+            periodo,
+            modulo
+        });
+
+        setErrores({}); // Limpia errores si todo está bien
+        setShowErr(true);
+        return { ok: true };
     } catch (e: any) {
-      if (e.errores) {
-        setErrores(e.errores); // Muestra todos los errores del backend
-      } else {
-        setErrores([{ message: e.message }]);
-      }
-      setError(String(e.message || e)); // Mensaje de error general
-      setShowErr(true); // Muestra la sección de errores
+        if (e.errores) {
+            const erroresPorHoja = e.errores.reduce((acc: Record<string, any[]>, err: any) => {
+                const hoja = err.hoja; // Usa el nombre real de la hoja
+                if (!acc[hoja]) acc[hoja] = [];
+                acc[hoja].push(err);
+                return acc;
+            }, {});
+            setErrores(erroresPorHoja); // Agrupa errores por hoja
+        } else {
+            setErrores({ General: [{ message: e.message || "Error desconocido" }] }); // Ahora es válido
+        }
+        setError(String(e.message || e));
+        setShowErr(true);
+        return { ok: false };
     } finally {
-      setValidatingData(false); // Termina la validación
+        setValidatingData(false);
     }
   };
 
-  // Función para limpiar el formulario
+ 
+
+  // Función para limpiar el formulario y el estado visual
   const limpiarFormulario = () => {
-    setPeriodo(null);
+    // setPeriodo(null);
     setModulo(null);
     setExcel(null);
     setPeriodoError(false);
     setModuloError(false);
+    setFileInputKey(prev => prev + 1);
+    setShowSuccess(false);
   };
 
   return {
@@ -162,5 +178,7 @@ export function useRolFormulario(): RolFormularioState {
     setPeriodoError,
     moduloError,
     setModuloError,
+    fileInputKey,
+    showSuccess,
   };
 }

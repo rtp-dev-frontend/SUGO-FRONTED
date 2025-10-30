@@ -22,7 +22,6 @@ export async function RolesCargadosPorPeriodo(periodo: number): Promise<IRolCarg
     }
     // Parsea la respuesta
     const data = await response.json();
-    console.log('Roles cargados:', data);
     return data;
   } catch (error) {
     console.error(error);
