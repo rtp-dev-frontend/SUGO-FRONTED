@@ -33,7 +33,7 @@ export const BotonDescargaPlantilla: React.FC<BotonDescargaPlantillaProps> = ({
     return (
         <Button
             label={isDownloading ? 'Descargando...' : 'Plantilla ROL'}
-            icon={isDownloading ? 'pi pi-spin pi-spinner' : 'pi pi-download'}
+            icon={isDownloading ? 'pi pi-spin pi-spinner' : 'pi pi-file-excel'}
             iconPos='left'
             severity='success'
             onClick={handleDescargar}
