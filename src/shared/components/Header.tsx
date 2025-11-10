@@ -27,22 +27,22 @@ export const Header = ({links=undefined}:{links?: any[]}) => {
   
   const allMenu: MenuItem[] = []
 
-  // carga de roles
-  if(sugo12rol) allMenu.push({
-    label: 'Rol',
-    icon: 'pi pi-calendar',
-    command: () => {
-      navigate('/rol');
-    }  
-  })
-  // cumplimiento
-  if(sugo12cum) allMenu.push({
-    label: 'Cumplimiento',
-    icon: 'pi pi-chart-bar',
-    command: () => {
-      navigate('/cumplimiento');
-    }  
-  }) 
+  // // carga de roles
+  // if(sugo12rol) allMenu.push({
+  //   label: 'Rol',
+  //   icon: 'pi pi-calendar',
+  //   command: () => {
+  //     navigate('/rol');
+  //   }  
+  // })
+  // // cumplimiento
+  // if(sugo12cum) allMenu.push({
+  //   label: 'Cumplimiento',
+  //   icon: 'pi pi-chart-bar',
+  //   command: () => {
+  //     navigate('/cumplimiento');
+  //   }  
+  // }) 
   // caseta
   if(sugo12cas) allMenu.push({
     label: 'Caseta',
@@ -54,9 +54,9 @@ export const Header = ({links=undefined}:{links?: any[]}) => {
   // NUEVO ROL
   if(sugo12rol) allMenu.push({
     label: 'ROL',
-    icon: 'pi pi-flag',
+    icon: 'pi pi-calendar',
     command: () => {
-      navigate('/rolNuevo');
+      navigate('/rol');
     }  
   }) 
   // // pruebas

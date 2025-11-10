@@ -6,29 +6,36 @@ import useAuthStore from '../shared/auth/useAuthStore';
 import { SugoInBg } from '../shared/components/Mensajes';
 // Componentes
 import { RolFormulario } from './cargar-rol/components/';
+import { EditarFormulario } from './editar-rol/components/';
 
 
 
 export const Rol = () => {
-    const { sugo2rol0p1, sugo2rol0p2 } = useAuthStore( state => state.permisosSUGO )
-    const index = [sugo2rol0p1, sugo2rol0p2].findIndex(Boolean) 
- 
+    const { sugo12rol } = useAuthStore(state => state.permisosSUGO)
+    const index = [sugo12rol].findIndex(Boolean)
+
     return (
         <Container>
 
-            <Header/>
-    
-            { (sugo2rol0p1 || sugo2rol0p2) ? 
+            <Header />
+
+            {(sugo12rol) ?
                 <TabView activeIndex={index}>
-                    { sugo2rol0p1 && 
-                        <TabPanel header="Cargar de Rol">
+                    {sugo12rol &&
+                        <TabPanel header="Cargar de ROL">
                             <RolFormulario />
+                        </TabPanel>
+                    }
+                    {sugo12rol &&
+                        <TabPanel header="Editar ROL">
+                            <EditarFormulario />
                         </TabPanel>
                     }
                 </TabView>
                 :
                 <SugoInBg />
             }
+
 
         </Container>
     )
