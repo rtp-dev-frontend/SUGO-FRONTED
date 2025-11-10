@@ -1,3 +1,11 @@
+import { useState, useEffect } from "react";
+import { useSelectoresRol } from "../../shared/hooks/useSelectoresRol"; // Hook compartido para manejar selectores y validación
+import { RolFormularioState } from "../interfaces/RolFormularioState"; // Interfaz del estado del formulario
+import { estructurarDatosDesdeFilas, parsearHojaCompleta } from "../utils"; // Utilidades para parsear y estructurar datos
+import { cargarRolCompleto } from "../services/cargaRolService"; // Servicio para cargar el rol completo
+import useAuthStore from "../../../shared/auth/useAuthStore"; // Hook para obtener información del usuario autenticado
+
+
 /**
  * Hook principal para la gestión del formulario de carga de roles.
  *
@@ -6,25 +14,15 @@
  *
  * Devuelve el estado completo del formulario y setters para su uso en el componente principal.
  */
-import { useState, useEffect } from "react";
-import { fetchPeriodos } from "../services/periodoService";
-import { fetchModulos } from "../services/moduloService";
-import { RolFormularioState } from "../interfaces/RolFormularioState";
-import { estructurarDatosDesdeFilas, parsearHojaCompleta } from "../utils";
-import { cargarRolCompleto } from "../services/cargaRolService";
-import useAuthStore from "../../../shared/auth/useAuthStore";
 
-export function useRolFormulario(): RolFormularioState {
-  // Estados para mostrar errores visuales en los selects de periodo y módulo
-  const [periodoError, setPeriodoError] = useState(false);
-  const [moduloError, setModuloError] = useState(false);
-  const [periodo, setPeriodo] = useState<any>(null); // Estado para el periodo seleccionado
-  const [periodos, setPeriodos] = useState<any[]>([]); // Opciones disponibles de periodo
-  const [modulo, setModulo] = useState<any>(null); // Estado para el módulo seleccionado
-  const [modulos, setModulos] = useState<any[]>([]); // Opciones disponibles de módulos
+export const useRolFormulario = (): RolFormularioState => {
+  const {
+    periodo, setPeriodo, periodos, periodoError, setPeriodoError, handlePeriodoChange,
+    modulo, setModulo, modulos, moduloError, setModuloError, handleModuloChange
+  } = useSelectoresRol(); // Hook unificado para los selectores y validación
   const [excel, setExcel] = useState<any>(null); // Estado para el archivo seleccionado (no usado)
   const [servicios, setServicios] = useState<any[]>([]);
-  const [cubredescansos, setCubredescansos] = useState<Record<string, any[]>>( {}); // Estado para los cubredescansos 
+  const [cubredescansos, setCubredescansos] = useState<Record<string, any[]>>({}); // Estado para los cubredescansos 
   const [jornadasExcepcionales, setJornadasExcepcionales] = useState<any[]>([]); // Estado para las jornadas excepcionales
   const [infoGeneral, setInfoGeneral] = useState<Record<string, any>>({});
   const [resultadosPorHoja, setResultadosPorHoja] = useState<any[]>([]);
@@ -37,107 +35,67 @@ export function useRolFormulario(): RolFormularioState {
   const [cont, setCont] = useState<number>(0); // Contador auxiliar
   const [rolesSended, setRolesSended] = useState<any[]>([]); // Array de roles enviados
   const { credencial: credencial_usuario, modulo: modulo_usuario } = useAuthStore((store) => store.user); //obtienne credencial y modulo del usuario autenticado
- // Estado para forzar el reset visual del input file y mensaje de éxito
+  // Estado para forzar el reset visual del input file y mensaje de éxito
   const [fileInputKey, setFileInputKey] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
-
-  // Cargar opciones del módulo usando el servicio
-  useEffect(() => {
-    const loadModulos = async () => {
-      const data = await fetchModulos();
-      // Formatea para el selector: label = descripcion, value = id
-      const formattedData = data.map((item: any) => ({
-        label: item.name, // item.descripcion
-        value: item.id, // item.id
-      }));
-      setModulos(formattedData);
-    };
-    loadModulos();
-  }, []);
-
-  // Cargar opciones del periodo usando el servicio
-  useEffect(() => {
-    const loadPeriodos = async () => {
-      const data = await fetchPeriodos(); // Llama al servicio
-      // Transforma los datos al formato esperado
-      const formattedData = data.map((item: any) => ({
-        label: item.name,
-        value: item.self,
-      }));
-      setPeriodos(formattedData); // Asigna las opciones transformadas
-
-      // Seleccionar automáticamente el periodo actual
-      const hoy = new Date();
-      const periodoActual = formattedData.find((p: any) => {
-        // Suponiendo que value.fecha_inicio y value.fecha_fin están en formato dd/mm/aaaa
-        const [diaIni, mesIni, anioIni] = p.value.fecha_inicio.split("/");
-        const [diaFin, mesFin, anioFin] = p.value.fecha_fin.split("/");
-        const ini = new Date(`${anioIni}-${mesIni}-${diaIni}`);
-        const fin = new Date(`${anioFin}-${mesFin}-${diaFin}`);
-        return ini <= hoy && hoy <= fin;
-      });
-      if (periodoActual) {
-        setPeriodo(periodoActual.value);
-      }
-    };
-
-    loadPeriodos();
-  }, []); // Se ejecuta una vez al montar el componente
 
 
   // Envia el rol completo al backend
   const sendData = async (excelData?: any): Promise<{ ok: boolean }> => {
     try {
-        setError("");
-        setErrores({}); // Ahora es válido porque errores es un objeto
-        setShowErr(false);
-        setValidatingData(true);
+      setError("");
+      setErrores({}); // Ahora es válido porque errores es un objeto
+      setShowErr(false);
+      setValidatingData(true);
 
-        const hojas = await parsearHojaCompleta(excelData ?? excel, true);
-        const hojasEstructuradas = hojas.map(({ nombre, filas }) => {
-            const estructuraHoja = estructurarDatosDesdeFilas(filas);
-            return {
-                nombre,
-                encabezado: estructuraHoja.encabezado,
-                servicios: estructuraHoja.servicios,
-                cubredescansos: estructuraHoja.cubredescansos,
-                jornadasExcepcionales: estructuraHoja.jornadasExcepcionales,
-            };
-        });
+      // Parsea y estructura las hojas del archivo Excel
+      const hojas = await parsearHojaCompleta(excelData ?? excel, true);
+      const hojasEstructuradas = hojas.map(({ nombre, filas }) => {
+        const estructuraHoja = estructurarDatosDesdeFilas(filas);
+        return {
+          nombre,
+          encabezado: estructuraHoja.encabezado,
+          servicios: estructuraHoja.servicios,
+          cubredescansos: estructuraHoja.cubredescansos,
+          jornadasExcepcionales: estructuraHoja.jornadasExcepcionales,
+        };
+      });
 
-        await cargarRolCompleto({
-            nombre_archivo: excel?.name,
-            subido_por: credencial_usuario,
-            modulo_usuario: modulo_usuario,
-            hojas: hojasEstructuradas,
-            periodo,
-            modulo
-        });
+      // Llama al servicio para cargar el rol completo
+      await cargarRolCompleto({
+        nombre_archivo: excel?.name,
+        subido_por: credencial_usuario,
+        modulo_usuario: modulo_usuario,
+        hojas: hojasEstructuradas,
+        periodo,
+        modulo
+      });
 
-        setErrores({}); // Limpia errores si todo está bien
-        setShowErr(true);
-        return { ok: true };
+      setErrores({}); // Limpia errores si todo está bien
+      setShowErr(true);
+      return { ok: true };
     } catch (e: any) {
-        if (e.errores) {
-            const erroresPorHoja = e.errores.reduce((acc: Record<string, any[]>, err: any) => {
-                const hoja = err.hoja; // Usa el nombre real de la hoja
-                if (!acc[hoja]) acc[hoja] = [];
-                acc[hoja].push(err);
-                return acc;
-            }, {});
-            setErrores(erroresPorHoja); // Agrupa errores por hoja
-        } else {
-            setErrores({ General: [{ message: e.message || "Error desconocido" }] }); // Ahora es válido
-        }
-        setError(String(e.message || e));
-        setShowErr(true);
-        return { ok: false };
+      // Maneja errores específicos y generales
+      if (e.errores) {
+        const erroresPorHoja = e.errores.reduce((acc: Record<string, any[]>, err: any) => {
+          const hoja = err.hoja; // Usa el nombre real de la hoja
+          if (!acc[hoja]) acc[hoja] = [];
+          acc[hoja].push(err);
+          return acc;
+        }, {});
+        setErrores(erroresPorHoja); // Agrupa errores por hoja
+      } else {
+        setErrores({ General: [{ message: e.message || "Error desconocido" }] }); // Ahora es válido
+      }
+      setError(String(e.message || e));
+      setShowErr(true);
+      return { ok: false };
     } finally {
-        setValidatingData(false);
+      setValidatingData(false);
     }
   };
 
- 
+
 
   // Función para limpiar el formulario y el estado visual
   const limpiarFormulario = () => {
@@ -146,12 +104,15 @@ export function useRolFormulario(): RolFormularioState {
     setExcel(null);
     setPeriodoError(false);
     setModuloError(false);
+    setErrores({}); // Limpia errores específicos
+    setError(""); // Limpia mensaje de error general
+    setShowErr(false); // Oculta mensajes de error visuales
     setFileInputKey(prev => prev + 1);
     setShowSuccess(false);
   };
 
+  // Retorna todo el estado y funciones necesarias
   return {
-    // Retorna todo el estado y funciones necesarias
     periodo,
     setPeriodo,
     periodos,
@@ -172,8 +133,7 @@ export function useRolFormulario(): RolFormularioState {
     sendData,
     limpiarFormulario,
     rolesSended,
-    // getHeaderForPrint: devuelve infoGeneral plano
-    getHeaderForPrint: () => Object.assign({}, infoGeneral),
+    getHeaderForPrint: () => Object.assign({}, infoGeneral), // getHeaderForPrint: devuelve infoGeneral plano
     periodoError,
     setPeriodoError,
     moduloError,

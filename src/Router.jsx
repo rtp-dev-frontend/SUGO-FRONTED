@@ -6,12 +6,12 @@ import { CumplimientoPage } from './CUMPLIMIENTO'
 import { HomePage } from './HOME'
 import { CasetaPage } from './CASETA'
 import { RolPage } from './ROL-ECOyOP'
-import { Rol } from './Rol'
-import { PruebasPage } from './pruebas'
+import { Rol } from './rol/Rol'
+// import { PruebasPage } from './pruebas'
 import useAuthStore from './shared/auth/useAuthStore'
 import { Container, Header } from './shared/components'
 import { SugoInBg } from './shared/components/Mensajes'
-import { UnderConstructionPage } from './pruebas/UnderConstructionPage'
+// import { UnderConstructionPage } from './pruebas/UnderConstructionPage'
 
 // import { CapturaRol } from './pruebas/UnderConstructionPage'
 
@@ -43,17 +43,17 @@ export const Router = () => {
         <>
           <Route path='/*' element={<BackGround />} />
 
-          {sugo12cum &&
+          {/* {sugo12cum &&
             <Route path='/cumplimiento' element={<CumplimientoPage />} />
           }
           {sugo12rol &&
             <Route path='/rol' element={<RolPage />} />
-          }
+          } */}
           {sugo12cas &&
             <Route path='/caseta' element={<CasetaPage />} />
           }
           {sugo12rol &&
-            <Route path='/rolNuevo' element={<Rol />} />
+            <Route path='/rol' element={<Rol />} />
           }
 
           {/* OPCIONES PRUEBA */}

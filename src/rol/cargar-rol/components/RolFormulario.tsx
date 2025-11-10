@@ -1,16 +1,15 @@
 import React, { useState, useRef } from 'react';
 import { Button } from 'primereact/button';
-import { PeriodoSelector } from './PeriodoSelector';
-import { ModuloSelector } from './ModuloSelector';
-import { ErroresRol } from './ErroresRol';
-import { BotonesFormulario } from './BotonesFormulario';
-import { BotonDescargaPlantilla } from './BotonDescargaPlantilla';
-import { useRolFormulario } from '../hooks/useRolFormulario';
-import { useArchivoHandlers } from '../hooks/useArchivoHandlers';
-import { useSelectorHandlers } from '../hooks/useSelectorHandlers';
-import { RolesCargados } from './RolesCargados';
-import { BotonRutasAutorizadas } from './BotonRutasAutorizadas';
-
+import { PeriodoSelector } from '../../shared/components/PeriodoSelector'; // Importa el selector de periodo compartido
+import { ModuloSelector } from '../../shared/components/ModuloSelector'; // Importa el selector de módulo compartido
+import { ErroresRol } from './ErroresRol'; // Componente para mostrar errores y estado de validación
+import { BotonesFormulario } from './BotonesFormulario'; // Componente para los botones del formulario
+import { BotonDescargaPlantilla } from './BotonDescargaPlantilla'; // Componente para el botón de descarga de plantilla
+import { useRolFormulario } from '../hooks/useRolFormulario'; // Hook personalizado para el formulario de rol
+import { useArchivoHandlers } from '../hooks/useArchivoHandlers'; // Hook para manejar selección de archivo
+import { useSelectoresRol } from '../../shared/hooks/useSelectoresRol'; // Hook compartido para manejar selectores y validación
+import { RolesCargados } from './RolesCargados'; // Componente para mostrar roles cargados por módulo
+import { BotonRutasAutorizadas } from './BotonRutasAutorizadas'; // Componente para el botón de rutas autorizadas
 
 
 /**
@@ -49,9 +48,7 @@ export const RolFormulario = () => {
     const { handleSelectArchivo, handleFileSelect } = useArchivoHandlers(
         periodo, modulo, setPeriodoError, setModuloError, fileInputRef, setExcel
     );
-    const { handlePeriodoChange, handleModuloChange } = useSelectorHandlers(
-        setPeriodo, setModulo, setPeriodoError, setModuloError
-    );
+    const { handlePeriodoChange, handleModuloChange } = useSelectoresRol();
 
     // Solo muestra el botón "Enviar" si todos los campos requeridos están completos y hay archivo
     const canSend = periodo && modulo && excel;
@@ -70,7 +67,7 @@ export const RolFormulario = () => {
                     <div className="w-3">
                         <PeriodoSelector
                             periodo={periodo}
-                            setPeriodo={handlePeriodoChange}
+                            setPeriodo={setPeriodo}
                             opciones={periodos}
                             hasError={periodoError}
                         />
@@ -83,7 +80,7 @@ export const RolFormulario = () => {
                     <div className="w-2">
                         <ModuloSelector
                             modulo={modulo}
-                            setModulo={handleModuloChange}
+                            setModulo={setModulo}
                             opciones={modulos}
                             hasError={moduloError}
                         />

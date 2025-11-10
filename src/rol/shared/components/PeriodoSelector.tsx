@@ -7,10 +7,10 @@ export const PeriodoSelector: React.FC<PeriodoSelectorProps> = ({ periodo, setPe
         <Dropdown
             className={`w-full ${hasError ? 'p-invalid' : ''}`}
             value={periodo}
-            options={opciones} 
+            options={opciones}
             onChange={(e) => setPeriodo(e.value)}
             placeholder="Seleccione un periodo"
-            optionLabel="label" // Propiedad que se muestra en el Dropdown
+            optionLabel="label"
         />
     );
 };
