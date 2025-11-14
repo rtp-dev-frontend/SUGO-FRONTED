@@ -1,3 +1,5 @@
+import { RutaEdit } from '../../editar-rol/interfaces/RutaEdit.interface';
+
 export interface RolesCargadosProps {
 	periodo: any;
 	reload?: number;
@@ -13,12 +15,4 @@ export interface ICubredescansoTurno {
 	updated_at: string;
 }
 
-export interface IRolCargado {
-	id: string;
-	rol_id: string;
-	economico: number;
-	sistema: string;
-	created_at: string;
-	updated_at: string;
-	cubredescansos_turnos: ICubredescansoTurno[];
-}
+export type IRolCargado = RutaEdit;

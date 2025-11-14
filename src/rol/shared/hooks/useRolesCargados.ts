@@ -23,8 +23,8 @@ export function useRolesCargados() {
         try {
             // Llama al servicio que consulta la API
             const data = await RolesCargadosPorPeriodo(periodo);
+            console.log('Datos recibidos de fetchRoles:', data);
             setRoles(data);
-            console.log("Roles cargadooos:", data);
         } catch (err) {
             setError("Error al consultar roles");
         } finally {

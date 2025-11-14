@@ -258,20 +258,20 @@ export const FormNewEcoEstado = ({ handleSubmit }:Props) => {
         eco ? form.trigger('eco'): undefined
     }, [eco])  
     
-    // Alert  Ruta programada del Eco
-    useEffect(() => {
-        if( regTipo === 1 && eco)  {
-            const date = momentoCaptura || new Date()
-            const fecha = date.toLocaleDateString().split('/').reverse().join('-')
+    // // Alert  Ruta programada del Eco
+    // useEffect(() => {
+    //     if( regTipo === 1 && eco)  {
+    //         const date = momentoCaptura || new Date()
+    //         const fecha = date.toLocaleDateString().split('/').reverse().join('-')
             
-            UseFetchGet(`${API}/api/rol/eco-${eco}/ruta?fecha=${fecha}`)
-            .then( res => {
-                if(!res) return toastTopCenter.current!.show({severity:'warn', summary: `Eco ${eco} sin programación`, life: 2500})
-                toastTopCenter.current!.show({severity:'info', summary: `Info del Eco ${res.eco}`, detail:<span>Programado para ruta <b>{res.ruta} - {res.modalidad}</b></span>, life: 25000})
-            })
-            .catch( err => console.error(err) )
-        } 
-    }, [regTipo, eco, momentoCaptura])  
+    //         UseFetchGet(`${API}/api/rol/eco-${eco}/ruta?fecha=${fecha}`)
+    //         .then( res => {
+    //             if(!res) return toastTopCenter.current!.show({severity:'warn', summary: `Eco ${eco} sin programación`, life: 2500})
+    //             toastTopCenter.current!.show({severity:'info', summary: `Info del Eco ${res.eco}`, detail:<span>Programado para ruta <b>{res.ruta} - {res.modalidad}</b></span>, life: 25000})
+    //         })
+    //         .catch( err => console.error(err) )
+    //     } 
+    // }, [regTipo, eco, momentoCaptura])  
     
     
     // Get "tipo de registro" del previo y reset el "tipo de registro" del actual
