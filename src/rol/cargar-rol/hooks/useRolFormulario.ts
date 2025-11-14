@@ -60,7 +60,6 @@ export const useRolFormulario = (): RolFormularioState => {
           jornadasExcepcionales: estructuraHoja.jornadasExcepcionales,
         };
       });
-
       // Llama al servicio para cargar el rol completo
       await cargarRolCompleto({
         nombre_archivo: excel?.name,

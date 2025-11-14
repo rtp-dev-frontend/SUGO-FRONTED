@@ -9,6 +9,7 @@
 import React from 'react';
 import { TablasTurno } from './TablasTurno';
 import { TablaCubreDescanso } from './TablaCubreDescanso';
+import { TablaJornadaExcepcional } from './TablaJornadaExcepcional';
 
 // Componente principal ModalGlosario
 // Recibe open, onClose, data, tipo y periodo para mostrar el detalle correspondiente
@@ -81,10 +82,9 @@ export const ModalGlosario: React.FC<{ open: boolean, onClose: () => void, data:
                         <TablaCubreDescanso data={{ cubredescansos: [data] }} />
                     </div>
                 ) : tipo === 'jornada' ? (
-                    <pre style={{ fontSize: 13, background: '#f7f7f7', padding: 12, borderRadius: 6, maxHeight: 300, overflow: 'auto' }}>
-                        {/* Muestra el detalle de la jornada en formato JSON */}
-                        {JSON.stringify(data, null, 2)}
-                    </pre>
+                    <div style={{ maxWidth: 900, margin: '0 auto' }}>
+                        <TablaJornadaExcepcional data={data} />
+                    </div>
                 ) : null}
             </div>
         </div>

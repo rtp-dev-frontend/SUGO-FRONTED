@@ -4,17 +4,15 @@
 // Este archivo fue modularizado para mejorar la organización y claridad.
 // - Los helpers y lógica de cálculo se movieron a utils/rolesHelpers.ts
 // - El modal de detalle se extrajo a components/ModalGlosario.tsx
-// - El componente de tablas por turno se extrajo a components/TablasTurno.tsx
 // - El componente principal RolesCargados ahora solo gestiona la UI y estados.
 // ---------------------------------------------------------------------
 
 // Importaciones principales: React, hooks personalizados, interfaces y componentes modularizados
 import React, { useState, useEffect } from 'react';
-import { useRolesCargados } from '../hooks/useRolesCargados';
+import { useRolesCargados } from '../../shared/hooks/useRolesCargados';
 import { useRolesFiltrados } from '../hooks/useRolesFiltrados';
-import { RolesCargadosProps } from '../interfaces/RolesCargados.interface';
+import { RolesCargadosProps } from '../../shared/interfaces/RolesCargados.interface';
 import { ModalGlosario } from './ModalGlosario';
-import { TablasTurno } from './TablasTurno';
 import useAuthStore from "../../../shared/auth/useAuthStore";
 
 // Constante de módulos disponibles
@@ -202,7 +200,7 @@ export const RolesCargados: React.FC<RolesCargadosProps> = ({ periodo, reload })
 																		return (
 																			<button key={key} onClick={() => abrirModalGlosario(j, 'jornada')}
 																				style={{ textAlign: 'left', padding: '6px 8px', borderRadius: 6, border: '1px solid #ddd', background: 'white', cursor: 'pointer' }}>
-																				{j.operador || j.lugar || `Jornada ${j.id || i}`}
+																				{`Operador: ${j.operador}`}
 																			</button>
 																		);
 																	})}

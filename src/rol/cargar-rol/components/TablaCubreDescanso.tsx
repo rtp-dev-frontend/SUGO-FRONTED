@@ -19,6 +19,7 @@ export const TablaCubreDescanso = ({ data }: { data: any }) => {
                     {cubredescansosArr.map((cd: any, idx: number) => (
                         <table key={cd.id} style={{ borderCollapse: 'collapse', fontSize: 12, marginBottom: 14, minWidth: 700 }}>
                             <caption style={{ fontWeight: 'bold', fontSize: 15, marginBottom: 8 }}>
+                                {/* Información del cubredescanso */}
                                 Económico: {cd.economico ? cd.economico : 'N/A'} — Sistema: {cd.sistema ? cd.sistema : 'N/A'}
                             </caption>
                             <thead>
@@ -35,7 +36,7 @@ export const TablaCubreDescanso = ({ data }: { data: any }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {cd.cubredescansos_turnos.map((turno: any) => (
+                                {cd.cubredescansos_turnos.map((turno: any) => ( // Iterar sobre los turnos de cubredescanso
                                     <tr key={turno.id}>
                                         <td style={{ border: '1px solid #eee', padding: 6 }}>{turno.turno}</td>
                                         <td style={{ border: '1px solid #eee', padding: 6 }}>{turno.operador}</td>
