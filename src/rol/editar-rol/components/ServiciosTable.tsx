@@ -35,27 +35,7 @@ const ServiciosTable: React.FC<ServiciosTableProps> = ({ servicios }) => {
 
     // Función para abrir el modal con el servicio seleccionado
     const handleEditar = (servicio: ServicioEdit) => {
-        // Transforma turno_operadores a operadores_servicios con todas las propiedades requeridas
-        let operadores_servicios = servicio.operadores_servicios;
-        if (!operadores_servicios && servicio.turno_operadores) {
-            operadores_servicios = Object.values(servicio.turno_operadores).map((op: any, idx: number) => ({
-                id: op.id ?? '',
-                servicio_id: op.servicio_id ?? '',
-                turno: op.turno ?? idx + 1,
-                operador: op.operador ?? '',
-                descansos: op.descansos ?? [],
-                credencial: op.credencial ?? '',
-                created_at: op.created_at ?? '',
-                updated_at: op.updated_at ?? ''
-            }));
-        }
-        // Si tu data no tiene horarios, pon un array vacío para evitar errores
-        const horarios = servicio.horarios ?? [];
-        setServicioSeleccionado({
-            ...servicio,
-            operadores_servicios,
-            horarios
-        });
+        setServicioSeleccionado(servicio);
         setModalVisible(true);
     };
 
@@ -104,52 +84,58 @@ const ServiciosTable: React.FC<ServiciosTableProps> = ({ servicios }) => {
                     />
                 </div>
             </div>
-            <table style={tableStyle}>
-                <thead>
-                    <tr>
-                        <th style={headerCellStyle}>#</th>
-                        <th style={headerCellStyle}>Económico</th>
-                        <th style={headerCellStyle}>Sistema</th>
-                        <th style={headerCellStyle}>1er Turno</th>
-                        <th style={headerCellStyle}>2do Turno</th>
-                        <th style={headerCellStyle}>3er Turno</th>
-                        <th style={headerCellStyle}>Descansos</th>
-                        <th style={headerCellStyle}>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {(servicios ?? []).map((servicio, idx) => {
-                        // Unifica los días de descanso de los tres turnos sin repetir
-                        const descansosSet = new Set([
-                            ...(servicio.turno_operadores?.['Turno 1']?.descansos ?? []),
-                            ...(servicio.turno_operadores?.['Turno 2']?.descansos ?? []),
-                            ...(servicio.turno_operadores?.['Turno 3']?.descansos ?? [])
-                        ]);
-                        const descansos = Array.from(descansosSet).join(', ') || '-'; // Muestra '-' si no hay descansos
-                        return (
-                            <tr key={idx} style={rowStyle(idx)}>
-                                <td style={cellStyle}>{idx + 1}</td>
-                                <td style={cellStyle}>{servicio.economico}</td>
-                                <td style={cellStyle}>{servicio.sistema}</td>
-                                <td style={cellStyle}>{servicio.turno_operadores?.['Turno 1']?.credencial ?? '-'}</td>
-                                <td style={cellStyle}>{servicio.turno_operadores?.['Turno 2']?.credencial ?? '-'}</td>
-                                <td style={cellStyle}>{servicio.turno_operadores?.['Turno 3']?.credencial ?? '-'}</td>
-                                <td style={cellStyle}>{descansos}</td>
-                                <td style={cellStyle}>
-                                    <Button
-                                        icon="pi pi-pencil"
-                                        className="p-button-rounded p-button-text p-button-lg"
-                                        tooltip="Editar"
-                                        severity="info"
-                                        onClick={() => handleEditar(servicio)}
-                                    />
-                                    <Button icon="pi pi-trash" className="p-button-rounded p-button-text p-button-lg" tooltip="Borrar" severity="danger" style={{ marginLeft: 8 }} />
-                                </td>
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
+            {(!servicios || servicios.length === 0) ? (
+                <div style={{ color: '#888', fontWeight: 500, padding: '16px 0', textAlign: 'center' }}>
+                    No hay registro de servicios.
+                </div>
+            ) : (
+                <table style={tableStyle}>
+                    <thead>
+                        <tr>
+                            <th style={headerCellStyle}>#</th>
+                            <th style={headerCellStyle}>Económico</th>
+                            <th style={headerCellStyle}>Sistema</th>
+                            <th style={headerCellStyle}>1er Turno</th>
+                            <th style={headerCellStyle}>2do Turno</th>
+                            <th style={headerCellStyle}>3er Turno</th>
+                            <th style={headerCellStyle}>Descansos</th>
+                            <th style={headerCellStyle}>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {(servicios ?? []).map((servicio, idx) => {
+                            // Unifica los días de descanso de los tres turnos sin repetir
+                            const descansosSet = new Set([
+                                ...(servicio.turno_operadores?.['Turno 1']?.descansos ?? []),
+                                ...(servicio.turno_operadores?.['Turno 2']?.descansos ?? []),
+                                ...(servicio.turno_operadores?.['Turno 3']?.descansos ?? [])
+                            ]);
+                            const descansos = Array.from(descansosSet).join(', ') || '-'; // Muestra '-' si no hay descansos
+                            return (
+                                <tr key={idx} style={rowStyle(idx)}>
+                                    <td style={cellStyle}>{idx + 1}</td>
+                                    <td style={cellStyle}>{servicio.economico}</td>
+                                    <td style={cellStyle}>{servicio.sistema}</td>
+                                    <td style={cellStyle}>{servicio.turno_operadores?.['Turno 1']?.credencial ?? '-'}</td>
+                                    <td style={cellStyle}>{servicio.turno_operadores?.['Turno 2']?.credencial ?? '-'}</td>
+                                    <td style={cellStyle}>{servicio.turno_operadores?.['Turno 3']?.credencial ?? '-'}</td>
+                                    <td style={cellStyle}>{descansos}</td>
+                                    <td style={cellStyle}>
+                                        <Button
+                                            icon="pi pi-pencil"
+                                            className="p-button-rounded p-button-text p-button-lg"
+                                            tooltip="Editar"
+                                            severity="info"
+                                            onClick={() => handleEditar(servicio)}
+                                        />
+                                        <Button icon="pi pi-trash" className="p-button-rounded p-button-text p-button-lg" tooltip="Borrar" severity="danger" style={{ marginLeft: 8 }} />
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            )}
 
             {/* Modal para editar servicio */}
             <Dialog

@@ -13,7 +13,7 @@ const CubredescansosTable: React.FC<CubredescansosTableProps> = ({ cubredescanso
     transition: 'background 0.2s',
     cursor: 'pointer'
   });
-
+  // console.log(cubredescansos);
   return (
     <div style={{ marginBottom: 40, position: 'relative' }}>
       <div style={{
@@ -25,18 +25,19 @@ const CubredescansosTable: React.FC<CubredescansosTableProps> = ({ cubredescanso
         <div>
           <label style={{ fontWeight: 600, fontSize: 17 }}>Cubre Descansos</label>
         </div>
-
         <div style={{ marginTop: 12, display: 'flex', gap: 12 }}>
-          <Button
-            label="Editar Cubredescansos"
-            icon="pi pi-pencil"
-            severity="info"
-            style={{
-              height: 40,
-              minWidth: 200
-            }}
-            // onClick={handleAgregarCubredescanso} // Implementa la función según tu lógica
-          />
+          {cubredescansos && cubredescansos.length > 0 && (
+            <Button
+              label="Editar Cubredescansos"
+              icon="pi pi-pencil"
+              severity="info"
+              style={{
+                height: 40,
+                minWidth: 200
+              }}
+              // onClick={handleAgregarCubredescanso}
+            />
+          )}
           <Button
             label="Nuevo Cubredescanso"
             icon="pi pi-calendar-plus"
@@ -44,62 +45,58 @@ const CubredescansosTable: React.FC<CubredescansosTableProps> = ({ cubredescanso
               height: 40,
               minWidth: 180
             }}
-            // onClick={handleAgregarCubredescanso} // Implementa la función según tu lógica
+            // onClick={handleAgregarCubredescanso}
           />
         </div>
       </div>
-      <table style={tableStyle}>
-        <thead>
-          <tr>
-            <th style={headerCellStyle}>#</th>
-            <th style={headerCellStyle}>Económico</th>
-            <th style={headerCellStyle}>Sistema</th>
-            <th style={headerCellStyle}>1er Turno</th>
-            <th style={headerCellStyle}>2do Turno</th>
-            <th style={headerCellStyle}>3er Turno</th>
-            <th style={headerCellStyle}>Lunes</th>
-            <th style={headerCellStyle}>Martes</th>
-            <th style={headerCellStyle}>Miércoles</th>
-            <th style={headerCellStyle}>Jueves</th>
-            <th style={headerCellStyle}>Viernes</th>
-            <th style={headerCellStyle}>Sábado</th>
-            <th style={headerCellStyle}>Domingo</th>
-          </tr>
-        </thead>
-        <tbody>
-          {(cubredescansos ?? []).map((cubredescanso, idx) => {
-            // Usa la propiedad correcta para los turnos
-            const turnos = cubredescanso.cubredescansos_turnos ?? [];
-            const turno1 = turnos.find((t: any) => t.turno === 1);
-            const turno2 = turnos.find((t: any) => t.turno === 2);
-            const turno3 = turnos.find((t: any) => t.turno === 3);
-
-            const getDia = (turno: any, dia: string) =>
-              turno?.servicios_a_cubrir?.[dia] ?? '-';
-
-            // Convierte el índice a letra mayúscula (A, B, C, ...)
-            const letra = String.fromCharCode(65 + idx); // 65 = 'A'
-
-            return (
-              <tr key={idx} style={rowStyle(idx)}>
-                <td style={cellStyle}>{letra}</td>
-                <td style={cellStyle}>{cubredescanso.Economico}</td>
-                <td style={cellStyle}>{cubredescanso.Sistema}</td>
-                <td style={cellStyle}>{turno1?.operador ?? '-'}</td>
-                <td style={cellStyle}>{turno2?.operador ?? '-'}</td>
-                <td style={cellStyle}>{turno3?.operador ?? '-'}</td>
-                <td style={cellStyle}>{getDia(turno1, 'L')}</td>
-                <td style={cellStyle}>{getDia(turno1, 'M')}</td>
-                <td style={cellStyle}>{getDia(turno1, 'Mi')}</td>
-                <td style={cellStyle}>{getDia(turno1, 'J')}</td>
-                <td style={cellStyle}>{getDia(turno1, 'V')}</td>
-                <td style={cellStyle}>{getDia(turno1, 'S')}</td>
-                <td style={cellStyle}>{getDia(turno1, 'D')}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      {(!cubredescansos || cubredescansos.length === 0) ? (
+        <div style={{ color: '#888', fontWeight: 500, padding: '16px 0', textAlign: 'center' }}>
+          No hay registro de cubredescansos.
+        </div>
+      ) : (
+        <table style={tableStyle}>
+          <thead>
+            <tr>
+              <th style={headerCellStyle}>#</th>
+              <th style={headerCellStyle}>Económico</th>
+              <th style={headerCellStyle}>Sistema</th>
+              <th style={headerCellStyle}>1er Turno</th>
+              <th style={headerCellStyle}>2do Turno</th>
+              <th style={headerCellStyle}>3er Turno</th>
+              <th style={headerCellStyle}>Lunes</th>
+              <th style={headerCellStyle}>Martes</th>
+              <th style={headerCellStyle}>Miércoles</th>
+              <th style={headerCellStyle}>Jueves</th>
+              <th style={headerCellStyle}>Viernes</th>
+              <th style={headerCellStyle}>Sábado</th>
+              <th style={headerCellStyle}>Domingo</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(cubredescansos ?? []).map((cubredescanso, idx) => { 
+              // Convierte el índice a letra mayúscula (A, B, C, ...)
+              const letra = String.fromCharCode(65 + idx);
+              return (
+                <tr key={idx} style={rowStyle(idx)}>
+                  <td style={cellStyle}>{letra}</td>
+                  <td style={cellStyle}>{cubredescanso.Economico}</td>
+                  <td style={cellStyle}>{cubredescanso.Sistema}</td>
+                  <td style={cellStyle}>{cubredescanso["1er Turno"] ?? '-'}</td>
+                  <td style={cellStyle}>{cubredescanso["2do Turno"] ?? '-'}</td>
+                  <td style={cellStyle}>{cubredescanso["3er Turno"] ?? '-'}</td>
+                  <td style={cellStyle}>{cubredescanso.L ?? '-'}</td>
+                  <td style={cellStyle}>{cubredescanso.M ?? '-'}</td>
+                  <td style={cellStyle}>{cubredescanso.Mi ?? '-'}</td>
+                  <td style={cellStyle}>{cubredescanso.J ?? '-'}</td>
+                  <td style={cellStyle}>{cubredescanso.V ?? '-'}</td>
+                  <td style={cellStyle}>{cubredescanso.S ?? '-'}</td>
+                  <td style={cellStyle}>{cubredescanso.D ?? '-'}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };

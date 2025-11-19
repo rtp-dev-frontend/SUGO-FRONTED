@@ -6,15 +6,6 @@ import { Accordion, AccordionTab } from 'primereact/accordion';
 
 const DIAS = ['Lunes a Viernes', 'Sabado', 'Domingo'];
 const TURNOS = [1, 2, 3];
-const DIAS_SEMANA = [
-    { label: 'Lunes', value: 'L' },
-    { label: 'Martes', value: 'M' },
-    { label: 'Miércoles', value: 'Mi' },
-    { label: 'Jueves', value: 'J' },
-    { label: 'Viernes', value: 'V' },
-    { label: 'Sábado', value: 'S' },
-    { label: 'Domingo', value: 'D' }
-];
 
 // Formulario para editar servicio con estilo tipo RolFormulario
 const EditarServicioFormulario: React.FC<{
@@ -22,6 +13,8 @@ const EditarServicioFormulario: React.FC<{
     onCancel: () => void;
     onSave?: (servicio: ServicioEdit) => void;
 }> = ({ servicio, onCancel }) => {
+
+    console.log('servicios', servicio);
     // Estado para operadores dinámicos (máximo 3)
     const [operadores, setOperadores] = useState<any[]>(
         servicio.operadores_servicios && servicio.operadores_servicios.length > 0
@@ -29,49 +22,11 @@ const EditarServicioFormulario: React.FC<{
             : [{ turno: 1, operador: '' }]
     );
 
-    // Estado para los descansos seleccionados
+    // Adaptar descansos para el primer turno disponible
+    const primerTurno = Object.keys(servicio.turno_operadores)[0];
     const [descansos, setDescansos] = useState<string[]>(
-        Array.isArray(operadores[0]?.descansos) ? operadores[0].descansos : []
+        servicio.turno_operadores[primerTurno]?.descansos ?? []
     );
-
-    // Genera horarios base (3 turnos x 3 días = 9)
-    const horarios = DIAS.flatMap(dia =>
-        TURNOS.map(turno => {
-            return (
-                servicio.horarios?.find(
-                    (h: any) => h.dias_servicios === dia && h.turno === turno
-                ) ?? {
-                    dias_servicios: dia,
-                    turno,
-                    hora_inicio: '',
-                    hora_inicio_cc: '',
-                    lugar_inicio: '',
-                    hora_termino: '',
-                    hora_termino_cc: '',
-                    termino_modulo: '',
-                    lugar_termino_cc: ''
-                }
-            );
-        })
-    );
-
-    // Agrupa los horarios por turno
-    const horariosPorTurno: { [turno: number]: any[] } = { 1: [], 2: [], 3: [] };
-    horarios.forEach((h: any) => {
-        if (h.turno === 1) horariosPorTurno[1].push(h);
-        if (h.turno === 2) horariosPorTurno[2].push(h);
-        if (h.turno === 3) horariosPorTurno[3].push(h);
-    });
-
-    // Función para agregar operador (máximo 3)
-    const handleAgregarOperador = () => {
-        if (operadores.length < 3) {
-            setOperadores([
-                ...operadores,
-                { turno: operadores.length + 1, operador: '' }
-            ]);
-        }
-    };
 
     return (
         <form style={{
@@ -101,7 +56,15 @@ const EditarServicioFormulario: React.FC<{
                 <label style={{ fontWeight: 700, marginBottom: 8, display: 'block', fontSize: 16 }}>Descansos (máximo 2 días):</label>
                 <MultiSelect
                     value={descansos}
-                    options={DIAS_SEMANA}
+                    options={[
+                        { label: 'Lunes', value: 'L' },
+                        { label: 'Martes', value: 'M' },
+                        { label: 'Miércoles', value: 'Mi' },
+                        { label: 'Jueves', value: 'J' },
+                        { label: 'Viernes', value: 'V' },
+                        { label: 'Sábado', value: 'S' },
+                        { label: 'Domingo', value: 'D' }
+                    ]}
                     onChange={(e) => {
                         if (e.value.length <= 2) setDescansos(e.value);
                     }}
@@ -114,99 +77,114 @@ const EditarServicioFormulario: React.FC<{
             <div>
                 <label style={{ fontWeight: 700, marginBottom: 8, display: 'block', fontSize: 16 }}>Turnos:</label>
                 <Accordion multiple>
-                    {TURNOS.map((turno, idx) => (
-                        <AccordionTab key={turno} header={`Turno ${turno}`} headerStyle={{ fontFamily: "'Segoe UI', 'Roboto', 'Arial', sans-serif", fontWeight: 700, fontSize: 17 }}>
-                            <div style={{ marginBottom: 16 }}>
-                                <label style={{ fontWeight: 600, fontSize: 16 }}>Operador:</label>
-                                <input
-                                    type="number"
-                                    defaultValue={operadores[idx]?.operador ?? ''}
-                                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc', fontFamily: "'Segoe UI', 'Roboto', 'Arial', sans-serif", fontSize: 16 }}
-                                />
-                            </div>
-                            {/* Horarios verticales por día, con campos personalizados por turno */}
-                            {horariosPorTurno[turno].map((h: any, hidx: number) => (
-                                <div key={h.dias_servicios + '-' + turno} style={{
-                                    background: '#f8f9fa', // Fondo plano y suave
-                                    border: '1px solid #e0e0e0',
-                                    borderRadius: '6px',
-                                    padding: '12px 14px',
-                                    marginBottom: 12,
-                                    boxShadow: 'none' // Sin sombra
-                                }}>
-                                    <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-                                        <span style={{ color: '#2f23ae', fontSize: 18, fontWeight: 700 }}>🕒</span>
-                                        {h.dias_servicios}
-                                    </div>
-                                    {/* Inputs personalizados por turno */}
-                                    {turno === 1 && (
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                                            <div>
-                                                <label style={{ fontWeight: 500 }}>Hora inicio Turno:</label>
-                                                <input type="time" defaultValue={h.hora_inicio ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
-                                            </div>
-                                            <div>
-                                                <label style={{ fontWeight: 500 }}>Hora inicio en CC:</label>
-                                                <input type="time" defaultValue={h.hora_inicio_cc ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
-                                            </div>
-                                            <div>
-                                                <label style={{ fontWeight: 500 }}>Lugar inicio:</label>
-                                                <input type="text" defaultValue={h.lugar_inicio ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
-                                            </div>
-                                            <div>
-                                                <label style={{ fontWeight: 500 }}>Hora término Turno:</label>
-                                                <input type="time" defaultValue={h.hora_termino ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
-                                            </div>
-                                        </div>
-                                    )}
-                                    {turno === 2 && (
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
-                                            <div>
-                                                <label style={{ fontWeight: 500 }}>Lugar inicio:</label>
-                                                <input type="text" defaultValue={h.lugar_inicio ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
-                                            </div>
-                                            <div>
-                                                <label style={{ fontWeight: 500 }}>Hora inicio:</label>
-                                                <input type="time" defaultValue={h.hora_inicio ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
-                                            </div>
-                                            <div>
-                                                <label style={{ fontWeight: 500 }}>Hora término Turno:</label>
-                                                <input type="time" defaultValue={h.hora_termino ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
-                                            </div>
-                                        </div>
-                                    )}
-                                    {turno === 3 && (
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                                            <div>
-                                                <label style={{ fontWeight: 500 }}>Lugar inicio:</label>
-                                                <input type="text" defaultValue={h.lugar_inicio ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
-                                            </div>
-                                            <div>
-                                                <label style={{ fontWeight: 500 }}>Hora inicio Turno:</label>
-                                                <input type="time" defaultValue={h.hora_inicio ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
-                                            </div>
-                                            <div>
-                                                <label style={{ fontWeight: 500 }}>Hora término en CC:</label>
-                                                <input type="time" defaultValue={h.hora_termino_cc ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
-                                            </div>
-                                            <div>
-                                                <label style={{ fontWeight: 500 }}>Lugar de término CC:</label>
-                                                <input type="text" defaultValue={h.lugar_termino_cc ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
-                                            </div>
-                                            <div>
-                                                <label style={{ fontWeight: 500 }}>Término en Módulo:</label>
-                                                <input type="time" defaultValue={h.termino_modulo ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
-                                            </div>
-                                            <div>
-                                                <label style={{ fontWeight: 500 }}>Término del Turno:</label>
-                                                <input type="time" defaultValue={h.termino_turno ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
-                                            </div>
-                                        </div>
-                                    )}
+                    {TURNOS.map((turno) => {
+                        const turnoKey = `Turno ${turno}`;
+                        const operadorObj = servicio.turno_operadores?.[turnoKey];
+                        return (
+                            <AccordionTab key={turnoKey} header={turnoKey} headerStyle={{ fontFamily: "'Segoe UI', 'Roboto', 'Arial', sans-serif", fontWeight: 700, fontSize: 17 }}>
+                                <div style={{ marginBottom: 16 }}>
+                                    <label style={{ fontWeight: 600, fontSize: 16 }}>Operador (credencial):</label>
+                                    <input
+                                        type="number"
+                                        value={operadorObj?.credencial ?? ''}
+                                        style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc', fontFamily: "'Segoe UI', 'Roboto', 'Arial', sans-serif", fontSize: 16 }}
+                                        readOnly
+                                    />
                                 </div>
-                            ))}
-                        </AccordionTab>
-                    ))}
+                                <div style={{ marginBottom: 16 }}>
+                                    <label style={{ fontWeight: 600, fontSize: 16 }}>Descansos:</label>
+                                    <span style={{ fontWeight: 500, fontSize: 15 }}>
+                                        {(operadorObj?.descansos ?? []).join(', ') || '-'}
+                                    </span>
+                                </div>
+                                {/* Horarios por día para este turno */}
+                                {DIAS.map(dia => {
+                                    const horario = servicio[dia]?.[turnoKey];
+                                    if (!horario) return null;
+                                    return (
+                                        <div key={dia + turnoKey} style={{
+                                            background: '#f8f9fa',
+                                            border: '1px solid #e0e0e0',
+                                            borderRadius: '6px',
+                                            padding: '12px 14px',
+                                            marginBottom: 12,
+                                            boxShadow: 'none'
+                                        }}>
+                                            <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+                                                <span style={{ color: '#2f23ae', fontSize: 18, fontWeight: 700 }}>🕒</span>
+                                                {dia}
+                                            </div>
+                                            {/* Inputs estrictos por turno */}
+                                            {turno === 1 && (
+                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                                                    <div>
+                                                        <label style={{ fontWeight: 500 }}>Hora inicio Turno:</label>
+                                                        <input type="time" defaultValue={horario.hora_inicio ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
+                                                    </div>
+                                                    <div>
+                                                        <label style={{ fontWeight: 500 }}>Hora inicio en CC:</label>
+                                                        <input type="time" defaultValue={horario.hora_inicio_cc ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
+                                                    </div>
+                                                    <div>
+                                                        <label style={{ fontWeight: 500 }}>Lugar inicio:</label>
+                                                        <input type="text" defaultValue={horario.lugar_inicio ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
+                                                    </div>
+                                                    <div>
+                                                        <label style={{ fontWeight: 500 }}>Hora término Turno:</label>
+                                                        <input type="time" defaultValue={horario.hora_termino ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {turno === 2 && (
+                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
+                                                    <div>
+                                                        <label style={{ fontWeight: 500 }}>Lugar inicio:</label>
+                                                        <input type="text" defaultValue={horario.lugar_inicio ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
+                                                    </div>
+                                                    <div>
+                                                        <label style={{ fontWeight: 500 }}>Hora inicio:</label>
+                                                        <input type="time" defaultValue={horario.hora_inicio ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
+                                                    </div>
+                                                    <div>
+                                                        <label style={{ fontWeight: 500 }}>Hora término Turno:</label>
+                                                        <input type="time" defaultValue={horario.hora_termino ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {turno === 3 && (
+                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
+                                                    <div>
+                                                        <label style={{ fontWeight: 500 }}>Lugar inicio:</label>
+                                                        <input type="text" defaultValue={horario.lugar_inicio ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
+                                                    </div>
+                                                    <div>
+                                                        <label style={{ fontWeight: 500 }}>Hora inicio Turno:</label>
+                                                        <input type="time" defaultValue={horario.hora_inicio ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
+                                                    </div>
+                                                    <div>
+                                                        <label style={{ fontWeight: 500 }}>Hora término en CC:</label>
+                                                        <input type="time" defaultValue={horario.hora_termino_cc ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
+                                                    </div>
+                                                    <div>
+                                                        <label style={{ fontWeight: 500 }}>Lugar de término CC:</label>
+                                                        <input type="text" defaultValue={horario.lugar_termino_cc ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
+                                                    </div>
+                                                    <div>
+                                                        <label style={{ fontWeight: 500 }}>Término en Módulo:</label>
+                                                        <input type="time" defaultValue={horario.termino_modulo ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
+                                                    </div>
+                                                    <div>
+                                                        <label style={{ fontWeight: 500 }}>Término del Turno:</label>
+                                                        <input type="time" defaultValue={horario.termino_turno ?? ''} style={{ width: '100%', padding: '7px', borderRadius: '6px', border: '1px solid #ccc', marginBottom: 8 }} />
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </AccordionTab>
+                        );
+                    })}
                 </Accordion>
             </div>
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '18px' }}>

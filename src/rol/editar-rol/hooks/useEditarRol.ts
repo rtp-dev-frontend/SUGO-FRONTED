@@ -3,12 +3,16 @@ import { RutaEdit } from '../interfaces/RutaEdit.interface';
 
 // Función para transformar la data de ruta
 function mapDataToRutaEdit(data: any): RutaEdit {
+  // console.log('DATA RECIBIDA EN MAPDATA:', data);
   return {
     id: Number(data.id),
+    modulo: data.modulo_usuario ?? data.modulo ?? 0, 
     nombre: data.RutaModalidade?.ruta?.ruta ?? '-',
     origen: data.RutaModalidade?.ruta?.origen ?? '-',
     destino: data.RutaModalidade?.ruta?.destino ?? '-',
     modalidad: data.RutaModalidade?.modalidad?.name ?? '-',
+    dias_impar: data.dias_impar ?? '-',
+    dias_par: data.dias_par ?? '-',    
     servicios: (data.servicios ?? []).map((s: any) => ({
       no: Number(s.id),
       economico: s.economico,
