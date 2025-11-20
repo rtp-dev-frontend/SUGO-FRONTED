@@ -13,18 +13,18 @@ export interface OperadorServicio {
 export interface HorarioServicio {
   id: string;
   servicio_id: string;
+  servicio_operador_id: number;
   dias_servicios: string;
   turno: number;
-  hora_inicio: string | null;
-  hora_inicio_cc: string | null;
-  lugar_inicio: string | null;
-  hora_termino: string | null;
-  hora_termino_cc: string | null;
-  termino_modulo: string | null;
-  lugar_termino_cc: string | null;
+  hora_inicio_turno?: string | null;
+  hora_inicio_cc?: string | null;
+  lugar_inicio?: string | null;
+  hora_termino_turno?: string | null;
+  hora_termino_cc?: string | null;
+  termino_modulo?: string | null;
+  lugar_termino_cc?: string | null;
   created_at: string;
   updated_at: string;
-  servicio_operador_id: number;
 }
 
 // Interfaz para el servicio editado

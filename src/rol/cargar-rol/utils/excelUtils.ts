@@ -298,18 +298,45 @@ export function estructurarDatosDesdeFilas(filas: any[]): any {
 		if (r?.col9 === "MODALIDAD:" && r?.col10) infoGeneral.modalidad.push(String(r.col10).trim());
 		if (r?.col16 === "DESTINO:" && r?.col17) infoGeneral.destino.push(String(r.col17).trim());
 		if (r?.col16 === "MODULO:" && r?.col17 !== undefined) infoGeneral.modulo.push(r.col17);
+	}
 
-		// notas: línea larga que contenga texto identificable
+	// Extracción de notas: busca la celda 'NOTAS:' y toma solo el texto de la columna debajo, deteniéndose en la primera celda vacía
+	let notasFinal = "";
+	let notasColKey = null;
+	let notasRowIdx = null;
+	// 1. Buscar la celda 'NOTAS:'
+	for (let i = 0; i < filas.length; i++) {
+		const r = filas[i];
 		for (const k of Object.keys(r)) {
 			const v = r[k];
-			if (typeof v === "string" && v.length > 40 && v.includes("SOLO SE PAGARÁ")) {
-				infoGeneral.notas["NOTAS:"] = v;
+			if (typeof v === "string" && v.trim().toUpperCase() === "NOTAS:") {
+				notasColKey = k;
+				notasRowIdx = i;
+				break;
 			}
-			// detectar listas de fechas (ej. "08, 10, 12 ..." o "07, 09, 11 ...")
-			if (typeof v === "string" && isDateList(v)) {
-				// solo añadir si no coincide con lo que ya extrajimos explícitamente
-				if (!dateLists.includes(v)) dateLists.push(v);
+		}
+		if (notasColKey) break;
+	}
+	// 2. Si se encontró, tomar solo las celdas debajo (en la misma columna) hasta encontrar una vacía o llegar al final, evitando repeticiones
+	if (notasColKey && notasRowIdx !== null) {
+		let lastText = null;
+		for (let j = notasRowIdx + 1; j < filas.length; j++) {
+			const r = filas[j];
+			const v = r[notasColKey];
+			if (typeof v === "string" && v.trim().length > 0) {
+				const cleanText = v.trim();
+				if (cleanText !== lastText) {
+					notasFinal += cleanText + " ";
+					lastText = cleanText;
+				}
+			} else {
+				// Si la celda está vacía, terminar
+				break;
 			}
+		}
+		notasFinal = notasFinal.replace(/\s+/g, " ").replace(/\n/g, " ").trim();
+		if (notasFinal.length > 0) {
+			infoGeneral.notas["NOTAS:"] = notasFinal;
 		}
 	}
 

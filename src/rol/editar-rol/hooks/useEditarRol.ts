@@ -26,28 +26,40 @@ function mapDataToRutaEdit(data: any): RutaEdit {
       }, {}),
       "Lunes a Viernes": (s.horarios ?? []).filter((h: any) => h.dias_servicios === "Lunes a Viernes").reduce((acc: any, h: any) => {
         acc[`Turno ${h.turno}`] = {
-          hora_inicio: h.hora_inicio,
-          hora_termino: h.hora_termino,
-          lugar_inicio: h.lugar_inicio,
-          lugar_termino: h.lugar_termino_cc
+          hora_inicio_turno: h.hora_inicio_turno ?? h.hora_inicio ?? null,
+          hora_inicio_cc: h.hora_inicio_cc ?? null,
+          lugar_inicio: h.lugar_inicio ?? null,
+          hora_termino_turno: h.hora_termino_turno ?? h.hora_termino ?? null,
+          hora_termino_cc: h.hora_termino_cc ?? null,
+          lugar_termino_cc: h.lugar_termino_cc ?? null,
+          termino_modulo: h.termino_modulo ?? null,
+          termino_turno: h.termino_turno ?? null
         };
         return acc;
       }, {}),
       "Sabado": (s.horarios ?? []).filter((h: any) => h.dias_servicios === "Sabado").reduce((acc: any, h: any) => {
         acc[`Turno ${h.turno}`] = {
-          hora_inicio: h.hora_inicio,
-          hora_termino: h.hora_termino,
-          lugar_inicio: h.lugar_inicio,
-          lugar_termino: h.lugar_termino_cc
+          hora_inicio_turno: h.hora_inicio_turno ?? h.hora_inicio ?? null,
+          hora_inicio_cc: h.hora_inicio_cc ?? null,
+          lugar_inicio: h.lugar_inicio ?? null,
+          hora_termino_turno: h.hora_termino_turno ?? h.hora_termino ?? null,
+          hora_termino_cc: h.hora_termino_cc ?? null,
+          lugar_termino_cc: h.lugar_termino_cc ?? null,
+          termino_modulo: h.termino_modulo ?? null,
+          termino_turno: h.termino_turno ?? null
         };
         return acc;
       }, {}),
       "Domingo": (s.horarios ?? []).filter((h: any) => h.dias_servicios === "Domingo").reduce((acc: any, h: any) => {
         acc[`Turno ${h.turno}`] = {
-          hora_inicio: h.hora_inicio,
-          hora_termino: h.hora_termino,
-          lugar_inicio: h.lugar_inicio,
-          lugar_termino: h.lugar_termino_cc
+          hora_inicio_turno: h.hora_inicio_turno ?? h.hora_inicio ?? null,
+          hora_inicio_cc: h.hora_inicio_cc ?? null,
+          lugar_inicio: h.lugar_inicio ?? null,
+          hora_termino_turno: h.hora_termino_turno ?? h.hora_termino ?? null,
+          hora_termino_cc: h.hora_termino_cc ?? null,
+          lugar_termino_cc: h.lugar_termino_cc ?? null,
+          termino_modulo: h.termino_modulo ?? null,
+          termino_turno: h.termino_turno ?? null
         };
         return acc;
       }, {})

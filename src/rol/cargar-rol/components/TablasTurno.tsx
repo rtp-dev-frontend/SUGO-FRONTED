@@ -11,15 +11,44 @@ import { getDiaSemana, compararHoraSalida, getDiasLaborados, getDiasCumplidos } 
 
 // Constantes de días y encabezados de tabla
 const dias = ["Lunes a Viernes", "Sabado", "Domingo"];
-const encabezados = [
-    { key: "hora_inicio", label: "Hora inicio" },
-    { key: "hora_inicio_cc", label: "Hora inicio CC" },
-    { key: "lugar_inicio", label: "Lugar inicio" },
-    { key: "hora_termino", label: "Hora término" },
-    { key: "hora_termino_cc", label: "Hora término CC" },
-    { key: "termino_modulo", label: "Término módulo" },
-    { key: "lugar_termino_cc", label: "Lugar término CC" }
-];
+
+// sustituye la constante 'encabezados' por funciones que devuelven columnas según el turno
+const getHeadersForTurn = (turno: number) => {
+    if (turno === 1) {
+        return [
+            { key: 'hora_inicio', label: 'Hora inicio Turno' },
+            { key: 'hora_inicio_cc', label: 'Hora inicio CC' },
+            { key: 'lugar_inicio', label: 'Lugar inicio' },
+            { key: 'hora_termino', label: 'Hora término Turno' }
+        ];
+    }
+    if (turno === 2) {
+        return [
+            { key: 'lugar_inicio', label: 'Lugar inicio' },
+            { key: 'hora_inicio', label: 'Hora inicio' },
+            { key: 'hora_termino', label: 'Hora término Turno' }
+        ];
+    }
+    // turno 3
+    return [
+        { key: 'lugar_inicio', label: 'Lugar inicio' },
+        { key: 'hora_inicio', label: 'Hora inicio Turno' },
+        { key: 'hora_termino_cc', label: 'Hora término CC' },
+        { key: 'lugar_termino_cc', label: 'Lugar término CC' },
+        { key: 'termino_modulo', label: 'Término módulo' },
+        { key: 'termino_turno', label: 'Término del Turno' }
+    ];
+};
+
+// helper para leer valor intentando variantes de clave (ej: hora_inicio / hora_inicio_turno)
+const getHorarioValue = (horario: any, key: string) => {
+    if (!horario) return '-';
+    const candidates = [key, `${key}_turno`, key.replace('_turno', '')];
+    for (const k of candidates) {
+        if (horario[k] !== undefined && horario[k] !== null && horario[k] !== '') return horario[k];
+    }
+    return '-';
+};
 
 // Componente principal TablasTurno
 export const TablasTurno: React.FC<{ data: any, turno: number, periodo: any }> = ({ data, turno, periodo }) => {
@@ -82,22 +111,26 @@ export const TablasTurno: React.FC<{ data: any, turno: number, periodo: any }> =
                         return null;
                     }
                     const horario = (data.horarios || []).find((h: any) => h.turno === turno && h.dias_servicios === dia);
+                    // obtiene los encabezados correspondientes al turno actual
+                    const headers = getHeadersForTurn(turno);
                     return (
                         <table key={dia} style={{ width: 260, borderCollapse: 'collapse', fontSize: 13, marginBottom: 0 }}>
                             <thead>
                                 <tr style={{ background: '#f7f7f7' }}>
-                                    <th colSpan={encabezados.length} style={{ border: '1px solid #eee', padding: 6, textAlign: 'center' }}>{dia}</th>
+                                    <th colSpan={headers.length} style={{ border: '1px solid #eee', padding: 6, textAlign: 'center' }}>{dia}</th>
                                 </tr>
                                 <tr>
-                                    {encabezados.map(e => (
+                                    {headers.map(e => (
                                         <th key={e.key} style={{ border: '1px solid #eee', padding: 6 }}>{e.label}</th>
                                     ))}
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    {encabezados.map(e => (
-                                        <td key={e.key} style={{ border: '1px solid #eee', padding: 6 }}>{horario ? (horario[e.key] ?? '-') : '-'}</td>
+                                    {headers.map(e => (
+                                        <td key={e.key} style={{ border: '1px solid #eee', padding: 6 }}>
+                                            {horario ? getHorarioValue(horario, e.key) : '-'}
+                                        </td>
                                     ))}
                                 </tr>
                             </tbody>
@@ -138,8 +171,41 @@ export const TablasTurno: React.FC<{ data: any, turno: number, periodo: any }> =
                                 } else {
                                     horarioDia = (data.horarios || []).find((h: any) => h.turno === turno && h.dias_servicios === 'Lunes a Viernes');
                                 }
-                                const horaInicio = horarioDia ? horarioDia.hora_inicio : null;
-                                const comparacion = compararHoraSalida(horaInicio, reg.momento);
+
+                                // Determinar hora de inicio según el turno y las posibles claves que provienen del backend/excel
+                                let horaInicio: string | null = null;
+                                if (horarioDia) {
+                                    const pick = (...keys: string[]) => {
+                                        for (const k of keys) {
+                                            if (horarioDia[k] !== undefined && horarioDia[k] !== null && horarioDia[k] !== '') return horarioDia[k];
+                                        }
+                                        return null;
+                                    };
+
+                                    if (turno === 1) {
+                                        horaInicio = pick(
+                                            'hora_inicio', 'hora_inicio_turno',
+                                            'Hora inicio Turno 1', 'Hora inicio Turno',
+                                            'Hora Inicio Turno', 'Hora inicio'
+                                        );
+                                    } else if (turno === 2) {
+                                        horaInicio = pick(
+                                            'hora_inicio', 'hora_inicio_turno',
+                                            'Hora inicio', 'Hora inicio 2'
+                                        );
+                                    } else if (turno === 3) {
+                                        horaInicio = pick(
+                                            'hora_inicio', 'hora_inicio_turno',
+                                            'Hora Inicio Turno 3', 'Hora Inicio Turno',
+                                            'Hora inicio'
+                                        );
+                                    }
+                                } else {
+                                    horaInicio = null;
+                                }
+
+                                // const comparacion = compararHoraSalida(horaInicio, reg.momento);
+                                const comparacion = compararHoraSalida(horaInicio ?? '', reg.momento);
                                 let color = '#888';
                                 let texto = 'Sin dato';
                                 if (comparacion.status === 'a-tiempo') {
