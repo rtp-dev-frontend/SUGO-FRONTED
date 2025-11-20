@@ -12,6 +12,9 @@ export interface RutaEdit {
   cubredescansos: CubredescansoEdit[];
   jornadas: JornadaEdit[];
   notas: string;
+  modulo: number;
+  dias_impar: string;
+  dias_par: string;
 }
 
 
