@@ -1,42 +1,37 @@
-import React from 'react'
-import { TabView, TabPanel } from 'primereact/tabview';
+import React from "react";
+import { TabView, TabPanel } from "primereact/tabview";
 // Globales
-import { Container, Header } from '../shared/components'
-import useAuthStore from '../shared/auth/useAuthStore';
-import { SugoInBg } from '../shared/components/Mensajes';
+import { Container, Header } from "../shared/components";
+import useAuthStore from "../shared/auth/useAuthStore";
+import { SugoInBg } from "../shared/components/Mensajes";
 // Componentes
-import { RolFormulario } from './cargar-rol/components/';
-import { EditarFormulario } from './editar-rol/components/';
-
-
+import { RolFormulario } from "./cargar-rol/components/";
+import { EditarFormulario } from "./editar-rol/components/";
 
 export const Rol = () => {
-    const { sugo12rol } = useAuthStore(state => state.permisosSUGO)
-    const index = [sugo12rol].findIndex(Boolean)
+  const { sugo12rol } = useAuthStore((state) => state.permisosSUGO);
+  const index = [sugo12rol].findIndex(Boolean);
 
-    return (
-        <Container>
+  return (
+    <Container>
+      <Header />
 
-            <Header />
-
-            {(sugo12rol) ?
-                <TabView activeIndex={index}>
-                    {sugo12rol &&
-                        <TabPanel header="Cargar de ROL">
-                            <RolFormulario />
-                        </TabPanel>
-                    }
-                    {sugo12rol &&
-                        <TabPanel header="Editar ROL">
-                            <EditarFormulario />
-                        </TabPanel>
-                    }
-                </TabView>
-                :
-                <SugoInBg />
-            }
-
-
-        </Container>
-    )
-}
+      {sugo12rol ? (
+        <TabView activeIndex={index}>
+          {sugo12rol && (
+            <TabPanel header="Cargar de ROL">
+              <RolFormulario />
+            </TabPanel>
+          )}
+          {sugo12rol && (
+            <TabPanel header="Editar ROL">
+              <EditarFormulario />
+            </TabPanel>
+          )}
+        </TabView>
+      ) : (
+        <SugoInBg />
+      )}
+    </Container>
+  );
+};

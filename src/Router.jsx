@@ -1,47 +1,44 @@
-import React, { useContext } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import React, { useContext } from "react";
+import { Route, Routes } from "react-router-dom";
 
-
-import { CumplimientoPage } from './CUMPLIMIENTO'
-import { HomePage } from './HOME'
-import { CasetaPage } from './CASETA'
-import { RolPage } from './ROL-ECOyOP'
-import { Rol } from './rol/Rol'
+import { CumplimientoPage } from "./CUMPLIMIENTO";
+import { HomePage } from "./HOME";
+import { CasetaPage } from "./CASETA";
+import { Index } from "./reportes";
+import { RolPage } from "./ROL-ECOyOP";
+import { Rol } from "./rol/Rol";
 // import { PruebasPage } from './pruebas'
-import useAuthStore from './shared/auth/useAuthStore'
-import { Container, Header } from './shared/components'
-import { SugoInBg } from './shared/components/Mensajes'
+import useAuthStore from "./shared/auth/useAuthStore";
+import { Container, Header } from "./shared/components";
+import { SugoInBg } from "./shared/components/Mensajes";
 // import { UnderConstructionPage } from './pruebas/UnderConstructionPage'
 
 // import { CapturaRol } from './pruebas/UnderConstructionPage'
 
-
-let msg
+let msg;
 const BackGround = () => (
   <Container>
     <Header />
     <SugoInBg msg2={msg} />
   </Container>
-)
+);
 
 export const Router = () => {
-
-  const logged = useAuthStore(state => state.logged)
-  const { sugo12cas, sugo12cum, sugo12pru, sugo12rol, sugo12capRol } = useAuthStore(state => state.permisosSUGO)
+  const logged = useAuthStore((state) => state.logged);
+  const { sugo12cas, sugo12cum, sugo12pru, sugo12rol, sugo12capRol } =
+    useAuthStore((state) => state.permisosSUGO);
 
   if (!(sugo12cas || sugo12cum || sugo12pru || sugo12rol || sugo12capRol))
-    msg = 'No tienes permisos para ver contenido'
-  else msg = undefined
+    msg = "No tienes permisos para ver contenido";
+  else msg = undefined;
 
   return (
     <Routes>
-      {!logged &&
-        <Route path='/*' element={<HomePage />} />
-      }
+      {!logged && <Route path="/*" element={<HomePage />} />}
 
-      {logged &&
+      {logged && (
         <>
-          <Route path='/*' element={<BackGround />} />
+          <Route path="/*" element={<BackGround />} />
 
           {/* {sugo12cum &&
             <Route path='/cumplimiento' element={<CumplimientoPage />} />
@@ -49,21 +46,13 @@ export const Router = () => {
           {sugo12rol &&
             <Route path='/rol' element={<RolPage />} />
           } */}
-          {sugo12cas &&
-            <Route path='/caseta' element={<CasetaPage />} />
-          }
-          {sugo12rol &&
-            <Route path='/rol' element={<Rol />} />
-          }
+          {sugo12cas && <Route path="/caseta" element={<CasetaPage />} />}
+          {sugo12rol && <Route path="/rol" element={<Rol />} />}
 
           {/* OPCIONES PRUEBA */}
-          {/* { sugo12pru &&
-          <Route path='/pruebas' element={<PruebasPage/>} />
-        }
-        <Route path='/dunderm' element={<UnderConstructionPage/>} />
+          {sugo12pru && <Route path="/reportes" element={<Index />} />}
+          {/* <Route path='/dunderm' element={<UnderConstructionPage/>} />
         { */}
-
-
 
           {/* OPCIONES FUTURAS U OLVIDADAS?  */}
           {/* {
@@ -78,9 +67,8 @@ export const Router = () => {
         {
           <Route path='/estadistica' element={<JUDestadistica/>} />
         } */}
-
         </>
-      }
+      )}
     </Routes>
-  )
-}
+  );
+};
