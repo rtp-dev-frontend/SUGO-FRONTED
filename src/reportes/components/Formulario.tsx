@@ -8,6 +8,7 @@ import { Toast } from "primereact/toast";
 import { validarCampos } from "../utils/validacion_inputs";
 import { ReportePVO } from "../shared/pdfs/ReportePVO";
 import { RepRegresoEco } from "../shared/pdfs/RepRegresoEco";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 export const Formulario = () => {
   const toast = useRef<Toast>(null); // 1. Referencia para Toast
@@ -156,14 +157,6 @@ export const Formulario = () => {
           </div>
         </div>
       )}
-
-      {/* validacion para mostrar PDFs  dependiendo del code*/}
-      {/* {mostrarPdf &&
-        selectedTipoPdf?.code &&
-        (() => {
-          const PdfComponent = pdfComponents[selectedTipoPdf.code];
-          return PdfComponent ? <PdfComponent severity={severity} /> : null;
-        })()} */}
     </>
   );
 };
