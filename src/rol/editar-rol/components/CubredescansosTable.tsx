@@ -1,19 +1,47 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CubredescansoEdit } from '../interfaces/CubredescansoEdit.interface';
 import { Button } from 'primereact/button';
 import { cellStyle, headerCellStyle, tableStyle } from '../../../shared/styles/TableStyles';
+import CubredescansoDialog from './CubredescansoDialog';
 
 interface CubredescansosTableProps {
   cubredescansos: CubredescansoEdit[];
 }
 
 const CubredescansosTable: React.FC<CubredescansosTableProps> = ({ cubredescansos }) => {
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [editData, setEditData] = useState<CubredescansoEdit | undefined>(undefined);
+  const [data, setData] = useState<CubredescansoEdit[]>(cubredescansos ?? []);
+
   const rowStyle = (idx: number) => ({
     background: idx % 2 === 0 ? '#f9f9f9' : '#fff',
     transition: 'background 0.2s',
     cursor: 'pointer'
   });
-  // console.log(cubredescansos);
+
+  const handleNuevo = () => {
+    setEditData(undefined);
+    setDialogVisible(true);
+  };
+
+  const handleEditar = (cubredescanso: CubredescansoEdit) => {
+    setEditData(cubredescanso);
+    setDialogVisible(true);
+  };
+
+  const handleEliminar = (idx: number) => {
+    setData(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleSave = (cubredescanso: CubredescansoEdit) => {
+    if (editData) {
+      setData(prev => prev.map(c => c === editData ? cubredescanso : c));
+    } else {
+      setData(prev => [...prev, cubredescanso]);
+    }
+    setDialogVisible(false);
+  };
+
   return (
     <div style={{ marginBottom: 40, position: 'relative' }}>
       <div style={{
@@ -26,18 +54,6 @@ const CubredescansosTable: React.FC<CubredescansosTableProps> = ({ cubredescanso
           <label style={{ fontWeight: 600, fontSize: 17 }}>Cubre Descansos</label>
         </div>
         <div style={{ marginTop: 12, display: 'flex', gap: 12 }}>
-          {cubredescansos && cubredescansos.length > 0 && (
-            <Button
-              label="Editar Cubredescansos"
-              icon="pi pi-pencil"
-              severity="info"
-              style={{
-                height: 40,
-                minWidth: 200
-              }}
-              // onClick={handleAgregarCubredescanso}
-            />
-          )}
           <Button
             label="Nuevo Cubredescanso"
             icon="pi pi-calendar-plus"
@@ -45,11 +61,11 @@ const CubredescansosTable: React.FC<CubredescansosTableProps> = ({ cubredescanso
               height: 40,
               minWidth: 180
             }}
-            // onClick={handleAgregarCubredescanso}
+            onClick={handleNuevo}
           />
         </div>
       </div>
-      {(!cubredescansos || cubredescansos.length === 0) ? (
+      {(!data || data.length === 0) ? (
         <div style={{ color: '#888', fontWeight: 500, padding: '16px 0', textAlign: 'center' }}>
           No hay registro de cubredescansos.
         </div>
@@ -70,11 +86,11 @@ const CubredescansosTable: React.FC<CubredescansosTableProps> = ({ cubredescanso
               <th style={headerCellStyle}>Viernes</th>
               <th style={headerCellStyle}>Sábado</th>
               <th style={headerCellStyle}>Domingo</th>
+              <th style={headerCellStyle}>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {(cubredescansos ?? []).map((cubredescanso, idx) => { 
-              // Convierte el índice a letra mayúscula (A, B, C, ...)
+            {(data ?? []).map((cubredescanso, idx) => { 
               const letra = String.fromCharCode(65 + idx);
               return (
                 <tr key={idx} style={rowStyle(idx)}>
@@ -91,12 +107,22 @@ const CubredescansosTable: React.FC<CubredescansosTableProps> = ({ cubredescanso
                   <td style={cellStyle}>{cubredescanso.V ?? '-'}</td>
                   <td style={cellStyle}>{cubredescanso.S ?? '-'}</td>
                   <td style={cellStyle}>{cubredescanso.D ?? '-'}</td>
+                  <td style={{ ...cellStyle, minWidth: 120 }}>
+                    <Button icon="pi pi-pencil" rounded text severity="info" aria-label="Editar" style={{ marginRight: 8 }} onClick={() => handleEditar(cubredescanso)} />
+                    <Button icon="pi pi-trash" rounded text severity="danger" aria-label="Eliminar" onClick={() => handleEliminar(idx)} />
+                  </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
       )}
+      <CubredescansoDialog
+        visible={dialogVisible}
+        onHide={() => setDialogVisible(false)}
+        onSave={handleSave}
+        initialData={editData}
+      />
     </div>
   );
 };

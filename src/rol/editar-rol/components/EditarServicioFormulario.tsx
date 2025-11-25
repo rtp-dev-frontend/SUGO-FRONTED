@@ -13,8 +13,8 @@ const EditarServicioFormulario: React.FC<{
     onCancel: () => void;
     onSave?: (servicio: ServicioEdit) => void;
 }> = ({ servicio, onCancel }) => {
+    const [form, setForm] = useState<ServicioEdit>(servicio);
 
-    // console.log('servicios', servicio);
     // Estado para operadores dinámicos (máximo 3)
     const [operadores, setOperadores] = useState<any[]>(
         servicio.operadores_servicios && servicio.operadores_servicios.length > 0
@@ -45,11 +45,21 @@ const EditarServicioFormulario: React.FC<{
             <div style={{ display: 'flex', gap: '26px', marginBottom: '8px' }}>
                 <div style={{ flex: 1 }}>
                     <label style={{ fontWeight: 700, marginBottom: 4, display: 'block', fontSize: 18, letterSpacing: '0.5px', color: '#222', fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif" }}>Económico:</label>
-                    <input type="number" defaultValue={servicio.economico ?? ''} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #d0d0d0', fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif", fontSize: 17, color: '#222', background: '#fafbfc' }} />
+                    <input
+                        type="number"
+                        value={form.economico ?? ''}
+                        onChange={e => setForm({ ...form, economico: Number(e.target.value) })}
+                        style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #d0d0d0', fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif", fontSize: 17, color: '#222', background: '#fafbfc' }}
+                    />
                 </div>
                 <div style={{ flex: 1 }}>
                     <label style={{ fontWeight: 700, marginBottom: 4, display: 'block', fontSize: 18, letterSpacing: '0.5px', color: '#222', fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif" }}>Sistema:</label>
-                    <input type="text" defaultValue={servicio.sistema ?? ''} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #d0d0d0', fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif", fontSize: 17, color: '#222', background: '#fafbfc' }} />
+                    <input
+                        type="text"
+                        value={form.sistema ?? ''}
+                        onChange={e => setForm({ ...form, sistema: e.target.value })}
+                        style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #d0d0d0', fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif", fontSize: 17, color: '#222', background: '#fafbfc' }}
+                    />
                 </div>
             </div>
             <div>
@@ -87,6 +97,7 @@ const EditarServicioFormulario: React.FC<{
                                     <input
                                         type="number"
                                         value={operadorObj?.credencial ?? ''}
+                                        onChange={() => { }}
                                         style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #d0d0d0', fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif", fontSize: 17, color: '#222', background: '#fafbfc' }}
                                     />
                                 </div>

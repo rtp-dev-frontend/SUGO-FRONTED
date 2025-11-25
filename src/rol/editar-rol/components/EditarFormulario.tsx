@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { ProgressSpinner } from 'primereact/progressspinner';
 import { PeriodoSelector } from "../../shared/components/PeriodoSelector"; // Importa el selector de periodo compartido
 import { useSelectoresRol } from "../../shared/hooks/useSelectoresRol"; // Hook compartido para manejar selectores y validación
 import { RutaCard } from "./index";
@@ -21,7 +22,6 @@ export const EditarFormulario: React.FC = () => {
         }
     }, [periodo]);
 
-    // console.log('ROLES CARGADOS EN EDITAR FORMULARIO:', roles);
 
     // Renderizado del formulario con los selectores
     return (
@@ -39,21 +39,26 @@ export const EditarFormulario: React.FC = () => {
                 </div>
             </div>
 
-            {/* Filtra rutas por módulo antes de mostrar */}
-            {roles && roles.length > 0 ? (
-                (() => {
-                    const rutasFiltradas = roles.filter((ruta: RutaEdit) => ruta.modulo === modulo_usuario);
-                    return rutasFiltradas.length > 0 ? (
-                        rutasFiltradas.map((ruta: RutaEdit) => (
-                            // console.log('RUTA FILTRADA EN EDITAR FORMULARIO:', ruta),
-                            <RutaCard key={ruta.id} ruta={ruta} onEdit={() => { }} />
-                        ))
-                    ) : (
-                        <div>No hay roles cargados para el periodo seleccionado.</div>
-                    );
-                })()
+            {/* Animación de carga */}
+            {loading ? (
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 120 }}>
+                    <ProgressSpinner style={{ width: '60px', height: '60px' }} strokeWidth="4" fill="#f4f4f4" animationDuration="1s" />
+                </div>
             ) : (
-                <div>No hay roles cargados para el periodo seleccionado.</div>
+                roles && roles.length > 0 ? (
+                    (() => {
+                        const rutasFiltradas = roles.filter((ruta: RutaEdit) => ruta.modulo === modulo_usuario);
+                        return rutasFiltradas.length > 0 ? (
+                            rutasFiltradas.map((ruta: RutaEdit) => (
+                                <RutaCard key={ruta.id} ruta={ruta} onEdit={() => { }} />
+                            ))
+                        ) : (
+                            <div>No hay roles cargados para el periodo seleccionado.</div>
+                        );
+                    })()
+                ) : (
+                    <div>No hay roles cargados para el periodo seleccionado.</div>
+                )
             )}
         </div>
     );
