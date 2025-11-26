@@ -14,6 +14,8 @@ import { useRolesFiltrados } from '../hooks/useRolesFiltrados';
 import { RolesCargadosProps } from '../../shared/interfaces/RolesCargados.interface';
 import { ModalGlosario } from './ModalGlosario';
 import useAuthStore from "../../../shared/auth/useAuthStore";
+import SalidasToast from '../../shared/components/SalidasToast';
+import { useSalidasToast } from '../../shared/hooks/useSalidasToast'; 
 
 // Constante de módulos disponibles
 const MODULOS = [1, 2, 3, 4, 5, 6, 7];
@@ -38,8 +40,12 @@ export const RolesCargados: React.FC<RolesCargadosProps> = ({ periodo, reload })
 
 	// Estado para modal glosario
 	const [modalOpen, setModalOpen] = useState(false);
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const [modalData, setModalData] = useState<any>(null);
 	const [modalTipo, setModalTipo] = useState<string>('');
+
+	// Usa el hook para obtener los mensajes automáticos
+	const { mensajesToast } = useSalidasToast(roles, periodo);
 
 	// Efecto para recargar roles cuando cambia el periodo o se solicita reload
 	useEffect(() => {
@@ -67,6 +73,7 @@ export const RolesCargados: React.FC<RolesCargadosProps> = ({ periodo, reload })
 		setModalData(null);
 		setModalTipo('');
 	};
+
 	// Validación de módulos a mostrar según el módulo del usuario
 	let modulosAMostrar: number[] = MODULOS;
 	if (typeof modulo_usuario === 'number' && modulo_usuario >= 1 && modulo_usuario <= 7) {
@@ -78,6 +85,7 @@ export const RolesCargados: React.FC<RolesCargadosProps> = ({ periodo, reload })
 	// Render principal: muestra los módulos, roles y detalles
 	return (
 		<div style={{ flex: 1, width: '100%', maxWidth: 1300, margin: '0 auto' }}>
+			<SalidasToast mensajes={mensajesToast} /> {/* Muestra el toast automático */}
 			<h2>Roles cargados</h2>
 			{/* Filtro activo */}
 			{/* Si hay filtro, se muestra el tipo y valor, con opción de limpiar */}
