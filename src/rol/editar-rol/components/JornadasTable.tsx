@@ -3,6 +3,7 @@ import { JornadaEdit } from '../interfaces/JornadaEdit.interface';
 import { Button } from 'primereact/button';
 import { cellStyle, headerCellStyle, tableStyle } from '../../../shared/styles/TableStyles';
 import JornadaDialog from './JornadaDialog';
+import { useJornadaValidation } from '../hooks/useJornadaValidation';
 
 interface JornadasTableProps {
   jornadas: JornadaEdit[];
@@ -13,39 +14,44 @@ const JornadasTable: React.FC<JornadasTableProps> = ({ jornadas }) => {
   const [editData, setEditData] = useState<JornadaEdit | undefined>(undefined);
   const [data, setData] = useState<JornadaEdit[]>(jornadas ?? []);
 
+  // Hook con toda la lógica y handlers
+  const {
+    handleEditarUI,
+    handleAgregarJornadaUI,
+    handleCerrarModalUI,
+    handleGuardarUI,
+    handleConfirmarEliminar,
+    toast
+  } = useJornadaValidation(
+    editData,
+    (jornada) => {
+      setData(prev => {
+        if (editData) {
+          return prev.map(j => j.id === jornada.id ? jornada : j);
+        } else {
+          return [...prev, jornada];
+        }
+      });
+      setDialogVisible(false);
+    },
+    (id) => {
+      setData(prev => prev.filter(j => j.id !== id));
+    },
+    setDialogVisible,
+    setEditData,
+    data,
+    setData
+  );
+
   const rowStyle = (idx: number) => ({
     background: idx % 2 === 0 ? '#f9f9f9' : '#fff',
     transition: 'background 0.2s',
     cursor: 'pointer'
   });
 
-  const handleNuevo = () => {
-    setEditData(undefined);
-    setDialogVisible(true);
-  };
-
-  const handleEditar = (jornada: JornadaEdit) => {
-    setEditData(jornada);
-    setDialogVisible(true);
-  };
-
-  const handleEliminar = (idx: number) => {
-    setData(prev => prev.filter((_, i) => i !== idx));
-  };
-
-  const handleSave = (jornada: JornadaEdit) => {
-    if (editData) {
-      // Editar existente
-      setData(prev => prev.map(j => j === editData ? jornada : j));
-    } else {
-      // Nuevo
-      setData(prev => [...prev, jornada]);
-    }
-    setDialogVisible(false);
-  };
-
   return (
     <div style={{ marginBottom: 40, position: 'relative' }}>
+      {/* <Toast ref={toast} /> */}
       <div style={{
         display: 'flex',
         alignItems: 'flex-start',
@@ -63,7 +69,7 @@ const JornadasTable: React.FC<JornadasTableProps> = ({ jornadas }) => {
               height: 40,
               minWidth: 200
             }}
-            onClick={handleNuevo}
+            onClick={handleAgregarJornadaUI}
           />
         </div>
       </div>
@@ -104,8 +110,26 @@ const JornadasTable: React.FC<JornadasTableProps> = ({ jornadas }) => {
                 <td style={cellStyle}>{jornada.dias_servicio?.S ?? '-'}</td>
                 <td style={cellStyle}>{jornada.dias_servicio?.D ?? '-'}</td>
                 <td style={{ ...cellStyle, minWidth: 120 }}>
-                  <Button icon="pi pi-pencil" rounded text severity="info" aria-label="Editar" style={{ marginRight: 8 }} onClick={() => handleEditar(jornada)} />
-                  <Button icon="pi pi-trash" rounded text severity="danger" aria-label="Eliminar" onClick={() => handleEliminar(idx)} />
+                  <Button
+                    icon="pi pi-pencil"
+                    rounded
+                    text
+                    severity="info"
+                    aria-label="Editar"
+                    style={{ marginRight: 8 }}
+                    onClick={() => handleEditarUI(jornada)}
+                  />
+                  <Button
+                    icon="pi pi-trash"
+                    rounded
+                    text
+                    severity="danger"
+                    aria-label="Eliminar"
+                    onClick={() => {
+                      setEditData(jornada);
+                      handleConfirmarEliminar();
+                    }}
+                  />
                 </td>
               </tr>
             ))}
@@ -114,8 +138,8 @@ const JornadasTable: React.FC<JornadasTableProps> = ({ jornadas }) => {
       )}
       <JornadaDialog
         visible={dialogVisible}
-        onHide={() => setDialogVisible(false)}
-        onSave={handleSave}
+        onHide={handleCerrarModalUI}
+        onSave={handleGuardarUI}
         initialData={editData}
       />
     </div>
