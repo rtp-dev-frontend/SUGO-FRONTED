@@ -3,6 +3,7 @@ import { CubredescansoEdit } from '../interfaces/CubredescansoEdit.interface';
 import { Button } from 'primereact/button';
 import { cellStyle, headerCellStyle, tableStyle } from '../../../shared/styles/TableStyles';
 import CubredescansoDialog from './CubredescansoDialog';
+import { useCubredescansoValidation } from '../hooks/useCubredescansoValidation';
 
 interface CubredescansosTableProps {
   cubredescansos: CubredescansoEdit[];
@@ -13,37 +14,45 @@ const CubredescansosTable: React.FC<CubredescansosTableProps> = ({ cubredescanso
   const [editData, setEditData] = useState<CubredescansoEdit | undefined>(undefined);
   const [data, setData] = useState<CubredescansoEdit[]>(cubredescansos ?? []);
 
+  // Hook con toda la lógica y handlers
+  const {
+    handleEditarUI,
+    handleAgregarCubredescansoUI,
+    handleCerrarModalUI,
+    handleGuardarUI,
+    handleConfirmarEliminar,
+    toast
+  } = useCubredescansoValidation({
+    diasSemana: ['L', 'M', 'Mi', 'J', 'V', 'S', 'D'],
+    initialData: editData,
+    setDialogVisible,
+    setEditData,
+    data,
+    setData,
+    onSave: (cubredescanso) => {
+      setData(prev => {
+        if (editData) {
+          return prev.map(c => c.No === cubredescanso.No ? cubredescanso : c);
+        } else {
+          return [...prev, cubredescanso];
+        }
+      });
+      setDialogVisible(false);
+    },
+    onDelete: (No) => {
+      setData(prev => prev.filter(c => c.No !== No));
+    }
+  });
+
   const rowStyle = (idx: number) => ({
     background: idx % 2 === 0 ? '#f9f9f9' : '#fff',
     transition: 'background 0.2s',
     cursor: 'pointer'
   });
 
-  const handleNuevo = () => {
-    setEditData(undefined);
-    setDialogVisible(true);
-  };
-
-  const handleEditar = (cubredescanso: CubredescansoEdit) => {
-    setEditData(cubredescanso);
-    setDialogVisible(true);
-  };
-
-  const handleEliminar = (idx: number) => {
-    setData(prev => prev.filter((_, i) => i !== idx));
-  };
-
-  const handleSave = (cubredescanso: CubredescansoEdit) => {
-    if (editData) {
-      setData(prev => prev.map(c => c === editData ? cubredescanso : c));
-    } else {
-      setData(prev => [...prev, cubredescanso]);
-    }
-    setDialogVisible(false);
-  };
-
   return (
     <div style={{ marginBottom: 40, position: 'relative' }}>
+      {/* <Toast ref={toast} /> */}
       <div style={{
         display: 'flex',
         alignItems: 'flex-start',
@@ -61,7 +70,7 @@ const CubredescansosTable: React.FC<CubredescansosTableProps> = ({ cubredescanso
               height: 40,
               minWidth: 180
             }}
-            onClick={handleNuevo}
+            onClick={handleAgregarCubredescansoUI}
           />
         </div>
       </div>
@@ -108,8 +117,26 @@ const CubredescansosTable: React.FC<CubredescansosTableProps> = ({ cubredescanso
                   <td style={cellStyle}>{cubredescanso.S ?? '-'}</td>
                   <td style={cellStyle}>{cubredescanso.D ?? '-'}</td>
                   <td style={{ ...cellStyle, minWidth: 120 }}>
-                    <Button icon="pi pi-pencil" rounded text severity="info" aria-label="Editar" style={{ marginRight: 8 }} onClick={() => handleEditar(cubredescanso)} />
-                    <Button icon="pi pi-trash" rounded text severity="danger" aria-label="Eliminar" onClick={() => handleEliminar(idx)} />
+                    <Button
+                      icon="pi pi-pencil"
+                      rounded
+                      text
+                      severity="info"
+                      aria-label="Editar"
+                      style={{ marginRight: 8 }}
+                      onClick={() => handleEditarUI(cubredescanso)}
+                    />
+                    <Button
+                      icon="pi pi-trash"
+                      rounded
+                      text
+                      severity="danger"
+                      aria-label="Eliminar"
+                      onClick={() => {
+                        setEditData(cubredescanso);
+                        handleConfirmarEliminar();
+                      }}
+                    />
                   </td>
                 </tr>
               );
@@ -119,8 +146,8 @@ const CubredescansosTable: React.FC<CubredescansosTableProps> = ({ cubredescanso
       )}
       <CubredescansoDialog
         visible={dialogVisible}
-        onHide={() => setDialogVisible(false)}
-        onSave={handleSave}
+        onHide={handleCerrarModalUI}
+        onSave={handleGuardarUI}
         initialData={editData}
       />
     </div>

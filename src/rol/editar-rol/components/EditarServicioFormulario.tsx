@@ -3,8 +3,9 @@ import { ServicioEdit } from '../interfaces/ServicioEdit.interface';
 import { Button } from 'primereact/button';
 import { MultiSelect } from 'primereact/multiselect';
 import { Accordion, AccordionTab } from 'primereact/accordion';
+import useEditarServicioForm from '../hooks/useEditarServicioForm';
 
-const DIAS = ['Lunes a Viernes', 'Sabado', 'Domingo'];
+const DIAS: string[] = ['Lunes a Viernes', 'Sabado', 'Domingo'];
 const TURNOS = [1, 2, 3];
 
 // Formulario para editar servicio con estilo tipo RolFormulario
@@ -12,44 +13,56 @@ const EditarServicioFormulario: React.FC<{
     servicio: ServicioEdit;
     onCancel: () => void;
     onSave?: (servicio: ServicioEdit) => void;
-}> = ({ servicio, onCancel }) => {
-    const [form, setForm] = useState<ServicioEdit>(servicio);
+}> = ({ servicio, onCancel, onSave }) => {
+    // Estados locales mínimos para el hook
+    const [servicioSeleccionado, setServicioSeleccionado] = useState<ServicioEdit | null>(servicio);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [serviciosState, setServiciosState] = useState<ServicioEdit[]>([]);
 
-    // Estado para operadores dinámicos (máximo 3)
-    const [operadores, setOperadores] = useState<any[]>(
-        servicio.operadores_servicios && servicio.operadores_servicios.length > 0
-            ? servicio.operadores_servicios.slice(0, 3)
-            : [{ turno: 1, operador: '' }]
-    );
-
-    // Adaptar descansos para el primer turno disponible
-    const primerTurno = Object.keys(servicio.turno_operadores)[0];
-    const [descansos, setDescansos] = useState<string[]>(
-        servicio.turno_operadores[primerTurno]?.descansos ?? []
+    const {
+        form,
+        setForm,
+        operadores,
+        descansos,
+        setDescansos,
+        handleInputChange,
+        handleMultiSelectChange,
+        inputStyle,
+        handleCrear,
+        handleEditar
+    } = useEditarServicioForm(
+        servicioSeleccionado ?? servicio,
+        serviciosState,
+        setServiciosState,
+        setServicioSeleccionado,
+        setModalVisible
     );
 
     return (
-        <form style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '1.5rem',
-            background: 'transparent',
-            borderRadius: 0,
-            boxShadow: 'none',
-            padding: '0',
-            maxWidth: '100%',
-            margin: 0,
-            fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif",
-            fontSize: 16
-        }}>
+        <form
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1.5rem',
+                background: 'transparent',
+                borderRadius: 0,
+                boxShadow: 'none',
+                padding: '0',
+                maxWidth: '100%',
+                margin: 0,
+                fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif",
+                fontSize: 16
+            }}
+            onSubmit={e => e.preventDefault()} // Evita el submit por defecto
+        >
             <div style={{ display: 'flex', gap: '26px', marginBottom: '8px' }}>
                 <div style={{ flex: 1 }}>
                     <label style={{ fontWeight: 700, marginBottom: 4, display: 'block', fontSize: 18, letterSpacing: '0.5px', color: '#222', fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif" }}>Económico:</label>
                     <input
                         type="number"
                         value={form.economico ?? ''}
-                        onChange={e => setForm({ ...form, economico: Number(e.target.value) })}
-                        style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #d0d0d0', fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif", fontSize: 17, color: '#222', background: '#fafbfc' }}
+                        onChange={e => handleInputChange('economico', Number(e.target.value))}
+                        style={{ ...inputStyle }}
                     />
                 </div>
                 <div style={{ flex: 1 }}>
@@ -57,8 +70,8 @@ const EditarServicioFormulario: React.FC<{
                     <input
                         type="text"
                         value={form.sistema ?? ''}
-                        onChange={e => setForm({ ...form, sistema: e.target.value })}
-                        style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #d0d0d0', fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif", fontSize: 17, color: '#222', background: '#fafbfc' }}
+                        onChange={e => handleInputChange('sistema', e.target.value)}
+                        style={{ ...inputStyle }}
                     />
                 </div>
             </div>
@@ -75,13 +88,11 @@ const EditarServicioFormulario: React.FC<{
                         { label: 'Sábado', value: 'S' },
                         { label: 'Domingo', value: 'D' }
                     ]}
-                    onChange={(e) => {
-                        if (e.value.length <= 2) setDescansos(e.value);
-                    }}
+                    onChange={handleMultiSelectChange}
                     display="chip"
                     placeholder="Selecciona días de descanso"
                     maxSelectedLabels={2}
-                    style={{ width: '100%', fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif", fontSize: 17, color: '#222', background: '#fafbfc' }}
+                    style={{ ...inputStyle }}
                 />
             </div>
             <div>
@@ -98,14 +109,14 @@ const EditarServicioFormulario: React.FC<{
                                         type="number"
                                         value={operadorObj?.credencial ?? ''}
                                         onChange={() => { }}
-                                        style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #d0d0d0', fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif", fontSize: 17, color: '#222', background: '#fafbfc' }}
+                                        style={{ ...inputStyle }}
                                     />
                                 </div>
                                 <div style={{ marginBottom: 16 }}>
                                     <label style={{ fontWeight: 600, fontSize: 17, color: '#222', fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif" }}>Horarios:</label>
                                 </div>
                                 {/* Horarios por día para este turno */}
-                                {DIAS.map(dia => {
+                                {DIAS.map((dia: string) => {
                                     const horariosDia = (servicio as any)[dia] ?? {};
                                     const turnoKey = `Turno ${turno}`;
                                     const h = horariosDia[turnoKey] ?? {};
@@ -191,23 +202,16 @@ const EditarServicioFormulario: React.FC<{
                 </Accordion>
             </div>
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '18px' }}>
-                <Button label="Guardar" icon="pi pi-save" style={{ minWidth: 130, fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif", fontSize: 17, fontWeight: 700, background: '#2f23ae', color: '#fff', borderRadius: '8px' }} />
+                <Button
+                    label="Guardar"
+                    icon="pi pi-save"
+                    type="button"
+                    style={{ minWidth: 130, fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif", fontSize: 17, fontWeight: 700, background: '#2f23ae', color: '#fff', borderRadius: '8px' }}
+                    onClick={() => onSave && onSave(form)} // Pasa el objeto form como argumento
+                />
             </div>
         </form>
     );
 };
 
 export default EditarServicioFormulario;
-
-
-const inputStyle = {
-    width: '100%',
-    padding: '10px',
-    borderRadius: '8px',
-    border: '1px solid #d0d0d0',
-    fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif",
-    fontSize: 16,
-    color: '#222',
-    background: '#fafbfc',
-    marginBottom: 8
-};

@@ -12,32 +12,35 @@ const diasSemana: DiaSemana[] = ['L', 'M', 'Mi', 'J', 'V', 'S', 'D']; // Lista d
 const CubredescansoDialog: React.FC<CubredescansoDialogProps> = ({ visible, onHide, onSave, initialData }) => {
   const {
     form,
-    setForm,
     descansoDias,
-    setDescansoDias,
     descansoError,
     handleDescansoChange,
     handleChange,
+    handleGuardarUI
   } = useCubredescansoValidation({
     diasSemana,
-    initialData
-  }); // Usamos el hook de validación personalizado
+    initialData,
+    onSave
+  });
 
   return (
     <Dialog header={initialData ? 'Editar Cubredescanso' : 'Nuevo Cubredescanso'} visible={visible} style={{ width: '700px' }} onHide={onHide} modal>
-      <form style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '1.5rem',
-        background: 'transparent',
-        borderRadius: 0,
-        boxShadow: 'none',
-        padding: '0',
-        maxWidth: '100%',
-        margin: 0,
-        fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif",
-        fontSize: 16
-      }}>
+      <form
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1.5rem',
+          background: 'transparent',
+          borderRadius: 0,
+          boxShadow: 'none',
+          padding: '0',
+          maxWidth: '100%',
+          margin: 0,
+          fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif",
+          fontSize: 16
+        }}
+        onSubmit={e => e.preventDefault()} // Evita el submit por defecto
+      >
         {/* Datos generales */}
         <div style={{ marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid #e0e0e0' }}>
           <div style={{ display: 'flex', gap: '26px' }}>
@@ -133,7 +136,13 @@ const CubredescansoDialog: React.FC<CubredescansoDialogProps> = ({ visible, onHi
           </div>
         </div>
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '18px' }}>
-          <Button label="Guardar" icon="pi pi-save" severity="success" onClick={() => onSave(form)} style={{ minWidth: 130, fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif", fontSize: 17, fontWeight: 700, background: '#2f23ae', color: '#fff', borderRadius: '8px' }} />
+          <Button
+            label="Guardar"
+            icon="pi pi-save"
+            type="button"
+            onClick={handleGuardarUI}
+            style={{ minWidth: 130, fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif", fontSize: 17, fontWeight: 700, background: '#2f23ae', color: '#fff', borderRadius: '8px' }}
+          />
         </div>
       </form>
     </Dialog>
