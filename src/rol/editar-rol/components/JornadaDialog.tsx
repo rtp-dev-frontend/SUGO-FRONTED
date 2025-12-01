@@ -17,7 +17,8 @@ const JornadaDialog: React.FC<JornadaDialogProps> = ({ visible, onHide, onSave, 
     descansoDias,
     descansoError,
     handleDescansoChange,
-  } = useJornadaValidation(initialData);
+    handleGuardarUI
+  } = useJornadaValidation(initialData, onSave);
 
   return (
     <Dialog header={initialData ? 'Editar Jornada Excepcional' : 'Nueva Jornada Excepcional'} visible={visible} style={{ width: '500px' }} onHide={onHide} modal>
@@ -33,7 +34,8 @@ const JornadaDialog: React.FC<JornadaDialogProps> = ({ visible, onHide, onSave, 
         margin: 0,
         fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif",
         fontSize: 16
-      }}>
+      }}
+      onSubmit={e => e.preventDefault()}>
         <div style={{ display: 'flex', gap: '26px', marginBottom: '8px' }}>
           <div style={{ flex: 1 }}>
             <label style={{ fontWeight: 700, marginBottom: 4, display: 'block', fontSize: 18, letterSpacing: '0.5px', color: '#222', fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif" }}>Operador:</label>
@@ -112,7 +114,14 @@ const JornadaDialog: React.FC<JornadaDialogProps> = ({ visible, onHide, onSave, 
           </div>
         </div>
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '18px' }}>
-          <Button label="Guardar" icon="pi pi-save" severity="success" onClick={() => onSave(form)} style={{ minWidth: 130, fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif", fontSize: 17, fontWeight: 700, background: '#2f23ae', color: '#fff', borderRadius: '8px' }} />
+          <Button
+            label="Guardar"
+            icon="pi pi-save"
+            severity="success"
+            type="button"
+            onClick={handleGuardarUI}
+            style={{ minWidth: 130, fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif", fontSize: 17, fontWeight: 700, background: '#2f23ae', color: '#fff', borderRadius: '8px' }}
+          />
         </div>
       </form>
     </Dialog>

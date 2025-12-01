@@ -4,6 +4,9 @@ import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import EditarServicioFormulario from './EditarServicioFormulario';
 import { cellStyle, headerCellStyle, tableStyle } from '../../../shared/styles/TableStyles';
+import { confirmDialog } from 'primereact/confirmdialog';
+import { Toast } from 'primereact/toast';
+import useEditarServicioForm from '../hooks/useEditarServicioForm';
 
 interface ServiciosTableProps {
     servicios: ServicioEdit[];
@@ -24,8 +27,41 @@ const DIAS_SEMANA = [
 ];
 
 const ServiciosTable: React.FC<ServiciosTableProps> = ({ servicios }) => {
-    const [modalVisible, setModalVisible] = useState(false);
     const [servicioSeleccionado, setServicioSeleccionado] = useState<ServicioEdit | null>(null);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [serviciosState, setServiciosState] = useState<ServicioEdit[]>(servicios ?? []);
+
+    const {
+        handleConfirmarEliminar,
+        handleGuardarUI,
+        toast,
+        handleEditarUI,
+        handleAgregarServicioUI,
+        handleCerrarModalUI
+    } = useEditarServicioForm(
+        servicioSeleccionado as ServicioEdit,
+        serviciosState,
+        setServiciosState,
+        setServicioSeleccionado,
+        setModalVisible,
+        // onSave callback para actualizar el estado local
+        (servicioGuardado) => {
+            setServiciosState(prev => {
+                const idx = prev.findIndex(s => s.economico === servicioGuardado.economico);
+                if (idx >= 0) {
+                    // Editar
+                    const copia = [...prev];
+                    copia[idx] = servicioGuardado;
+                    return copia;
+                } else {
+                    // Crear
+                    return [...prev, servicioGuardado];
+                }
+            });
+            setModalVisible(false);
+            setServicioSeleccionado(null);
+        }
+    );
 
     const rowStyle = (idx: number) => ({
         background: idx % 2 === 0 ? '#f9f9f9' : '#fff',
@@ -33,36 +69,9 @@ const ServiciosTable: React.FC<ServiciosTableProps> = ({ servicios }) => {
         cursor: 'pointer'
     });
 
-    // Función para abrir el modal con el servicio seleccionado
-    const handleEditar = (servicio: ServicioEdit) => {
-        setServicioSeleccionado(servicio);
-        setModalVisible(true);
-    };
-
-    // Función para cerrar el modal
-    const handleCerrarModal = () => {
-        setModalVisible(false);
-        setServicioSeleccionado(null);
-    };
-
-    // Función para agregar un nuevo servicio
-    const handleAgregarServicio = () => {
-        setServicioSeleccionado({
-            economico: 0, // <-- debe ser number, no string
-            sistema: '',
-            operadores_servicios: [],
-            horarios: [],
-            turno_operadores: {},
-            no: 0,
-            'Lunes a Viernes': {},
-            'Sabado': {},
-            'Domingo': {}
-        } as ServicioEdit);
-        setModalVisible(true);
-    };
-
     return (
         <div style={{ marginBottom: 40, position: 'relative' }}>
+            <Toast ref={toast} />
             <div style={{
                 display: 'flex',
                 alignItems: 'flex-start',
@@ -80,11 +89,11 @@ const ServiciosTable: React.FC<ServiciosTableProps> = ({ servicios }) => {
                             height: 40,
                             minWidth: 200
                         }}
-                        onClick={handleAgregarServicio}
+                        onClick={handleAgregarServicioUI}
                     />
                 </div>
             </div>
-            {(!servicios || servicios.length === 0) ? (
+            {(serviciosState.length === 0) ? (
                 <div style={{ color: '#888', fontWeight: 500, padding: '16px 0', textAlign: 'center' }}>
                     No hay registro de servicios.
                 </div>
@@ -103,7 +112,7 @@ const ServiciosTable: React.FC<ServiciosTableProps> = ({ servicios }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {(servicios ?? []).map((servicio, idx) => {
+                        {(serviciosState ?? []).map((servicio, idx) => {
                             // Unifica los días de descanso de los tres turnos sin repetir
                             const descansosSet = new Set([
                                 ...(servicio.turno_operadores?.['Turno 1']?.descansos ?? []),
@@ -126,9 +135,19 @@ const ServiciosTable: React.FC<ServiciosTableProps> = ({ servicios }) => {
                                             className="p-button-rounded p-button-text p-button-lg"
                                             tooltip="Editar"
                                             severity="info"
-                                            onClick={() => handleEditar(servicio)}
+                                            onClick={() => handleEditarUI(servicio)}
                                         />
-                                        <Button icon="pi pi-trash" className="p-button-rounded p-button-text p-button-lg" tooltip="Borrar" severity="danger" style={{ marginLeft: 8 }} />
+                                        <Button
+                                            icon="pi pi-trash"
+                                            className="p-button-rounded p-button-text p-button-lg"
+                                            tooltip="Borrar"
+                                            severity="danger"
+                                            style={{ marginLeft: 8 }}
+                                            onClick={() => {
+                                                setServicioSeleccionado(servicio);
+                                                handleConfirmarEliminar();
+                                            }}
+                                        />
                                     </td>
                                 </tr>
                             );
@@ -141,14 +160,15 @@ const ServiciosTable: React.FC<ServiciosTableProps> = ({ servicios }) => {
             <Dialog
                 header="Editar Servicio"
                 visible={modalVisible}
-                style={{ width: '80vw', maxWidth: 1200 }} // ancho del dialog 
-                onHide={handleCerrarModal}
+                style={{ width: '80vw', maxWidth: 1200 }}
+                onHide={handleCerrarModalUI}
                 modal
             >
                 {servicioSeleccionado && (
                     <EditarServicioFormulario
                         servicio={servicioSeleccionado}
-                        onCancel={handleCerrarModal}
+                        onCancel={handleCerrarModalUI}
+                        onSave={handleGuardarUI} // Usa el handler único del hook
                     />
                 )}
             </Dialog>

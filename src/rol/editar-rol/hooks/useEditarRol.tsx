@@ -164,24 +164,6 @@ export function useEditarRolPorPeriodo(ruta: IRolCargado) {
     return <span>{event.day}</span>;
   };
 
-  // Funciones para editar/borrar cubredescanso y jornada
-  function handleEditarCubredescanso(cubredescanso: CubredescansoEdit) {
-    // Aquí tu lógica de edición
-    console.log('Editar cubredescanso', cubredescanso);
-  }
-  function handleBorrarCubredescanso(cubredescanso: CubredescansoEdit) {
-    // Aquí tu lógica de borrado
-    console.log('Borrar cubredescanso', cubredescanso);
-  }
-  function handleEditarJornada(jornada: JornadaEdit) {
-    // Aquí tu lógica de edición
-    console.log('Editar jornada', jornada);
-  }
-  function handleBorrarJornada(jornada: JornadaEdit) {
-    // Aquí tu lógica de borrado
-    console.log('Borrar jornada', jornada);
-  }
-
   return {
     mapDataToRutaEdit,
     diasImpares,
@@ -190,11 +172,6 @@ export function useEditarRolPorPeriodo(ruta: IRolCargado) {
     handleParesChange,
     getMinDate,
     imparTemplate,
-    parTemplate,
-    handleEditarCubredescanso,
-    handleBorrarCubredescanso,
-    handleEditarJornada,
-    handleBorrarJornada
-    // ...otros métodos...
+    parTemplate
   };
 }
