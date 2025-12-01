@@ -118,9 +118,9 @@ export const RepRegresoEco = () => {
     return data;
   };
 
-  const leftTestData = generateTestData(20, 'left');
-  const rightTestData = generateTestData(20, 'right');
-  const rowsFirstPage = 20;
+  const leftTestData = generateTestData(80, 'left');
+  const rightTestData = generateTestData(80, 'right');
+  const rowsFirstPage = 25;
 
   //TABLA IZQUIERDA
   const leftTable = (doc as any).autoTable({

@@ -8,6 +8,7 @@ import { Toast } from "primereact/toast";
 import { validarCampos } from "../utils/validacion_inputs";
 import { ReportePVO } from "../shared/pdfs/ReportePVO";
 import { RepRegresoEco } from "../shared/pdfs/RepRegresoEco";
+import { RepSalidas } from "../shared/pdfs/RepSalidas";
 import { ProgressSpinner } from "primereact/progressspinner";
 
 export const Formulario = () => {
@@ -31,7 +32,7 @@ export const Formulario = () => {
     { name: "Reporte de Control de Radio", code: "3" },
     { name: "Reporte de Control de Expresos y Nochebus", code: "4" },
     { name: "Reporte de Control de Regresos de Autobuses", code: "5" },
-    { name: "Reporte Celdas 6", code: "6" }, // ...
+    { name: "Reporte de Control de Salidas", code: "6" },
   ];
 
   // Usa el hook aquí
@@ -79,6 +80,7 @@ export const Formulario = () => {
   const pdfGenerators: Record<string, () => void> = {
     "1": ReportePVO,
     "5": RepRegresoEco,
+    "6": RepSalidas,
   };
 
   const handleGenerarPDF = () => {
