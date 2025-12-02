@@ -45,7 +45,8 @@ function generarTabla(
   datos: string[],
   startY: number,
   mostrarTotal: boolean = true,
-  customStyles?: object // <-- nuevo parámetro opcional
+  customStyles?: object, // <-- nuevo parámetro opcional
+  marginLeft: number = 10 // <-- nuevo parámetro
 ) {
   const body = datos.map((item) => [item]);
   if (mostrarTotal && datos.length > 0) {
@@ -56,22 +57,27 @@ function generarTabla(
     head: [[titulo]],
     body,
     startY: startY,
-    margin: { left: 10, right: 30 },
-    tableWidth: 18,
+    margin: { left: marginLeft, right: 30 },
+    tableWidth:
+      customStyles && customStyles.tableWidth ? customStyles.tableWidth : 14,
     styles: {
       fontSize: 5,
       halign: "center",
       minCellHeight: 4,
       cellPadding: 1.1,
-      ...customStyles, // <-- aplica estilos personalizados si existen
+      ...customStyles,
     },
     headStyles: {
       fontStyle: "bold",
-      fontSize: 8,
+      fontSize: 6,
       cellPadding: 1.5,
       fillColor: [41, 128, 185],
       textColor: 255,
     },
+    columnStyles:
+      customStyles && customStyles.columnStyles
+        ? customStyles.columnStyles
+        : undefined,
     theme: "grid",
   });
 }
@@ -120,6 +126,8 @@ function tablaReportaRecibe(
 }
 
 export const ReportePVO = () => {
+  // Tablas verticales de 5 filas junto al bloque de 10 filas
+
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
   agregarHeader(doc);
 
@@ -197,7 +205,7 @@ export const ReportePVO = () => {
   // Generar tablas columna 1
   generarTabla(
     doc,
-    "Ruta Ordinarios",
+    "Ruta   Ordinarios",
     datos_column.map((d) => d.ordinarios),
     12
   );
@@ -227,55 +235,227 @@ export const ReportePVO = () => {
     }
   );
 
+  // una columna: solo 6 filas y sin TOTAL
+  generarTabla(
+    doc,
+    "P.V.\nASG",
+    ["", "", "", "", "", ""],
+    12,
+    false, // no mostrar total
+    {
+      tableWidth: 8,
+      minCellHeight: 4.6,
+      columnStyles: { 0: { cellWidth: 7 } },
+    },
+    250
+  );
+
+  // una columna: solo 6 filas y sin TOTAL
+  generarTabla(
+    doc,
+    "P.V.\nAUT",
+    ["", "", "", "", "", ""],
+    12,
+    false, // no mostrar total
+    {
+      tableWidth: 7,
+      minCellHeight: 5,
+      columnStyles: { 0: { cellWidth: 7 } },
+    },
+    259
+  );
+
+  // una columna: solo 6 filas y sin TOTAL
+  generarTabla(
+    doc,
+    "PROMT PV\n. X RUTA",
+    ["", "", "", "", "", ""],
+    12,
+    false, // no mostrar total
+    {
+      tableWidth: 30,
+      minCellHeight: 5,
+      cellPadding: 0.2, //espacio interno
+      columnStyles: { 0: { cellWidth: 14 } },
+    },
+    268
+  );
+
+  // Segundo bloque (más abajo, 10 filas)
+  const diezFilasVacias = Array(10).fill("");
+  generarTabla(
+    doc,
+    "P.V.\nASG",
+    diezFilasVacias,
+    53,
+    false,
+    {
+      tableWidth: 7,
+      minCellHeight: 1,
+      cellPadding: 1,
+      columnStyles: { 0: { cellWidth: 7 } },
+    },
+    250
+  );
+  generarTabla(
+    doc,
+    "P.V.\nAUT",
+    diezFilasVacias,
+    53,
+    false,
+    { tableWidth: 7, minCellHeight: 1, columnStyles: { 0: { cellWidth: 7 } } },
+    259
+  );
+  generarTabla(
+    doc,
+    "PROMT PV\n. X RUTA",
+    diezFilasVacias,
+    53,
+    false,
+    {
+      tableWidth: 30,
+      minCellHeight: 2.2,
+      cellPadding: 1.1, //espacio interno
+      columnStyles: { 0: { cellWidth: 14 } },
+    },
+    268
+  );
+
+  // Tablas verticales de 5 filas debajo del bloque de 10 filas
+  const cincoFilasVaciasJunto = Array(5).fill("");
+  generarTabla(
+    doc,
+    "P.V.\nASG",
+    cincoFilasVaciasJunto,
+    106,
+    false,
+    {
+      tableWidth: 7,
+      minCellHeight: 1,
+      cellPadding: 1.2,
+      columnStyles: { 0: { cellWidth: 7 } },
+    },
+    250
+  );
+  generarTabla(
+    doc,
+    "P.V.\nAUT",
+    cincoFilasVaciasJunto,
+    106,
+    false,
+    {
+      tableWidth: 7,
+      minCellHeight: 1,
+      cellPadding: 1.4,
+      columnStyles: { 0: { cellWidth: 7 } },
+    },
+    259
+  );
+  generarTabla(
+    doc,
+    "PROMT PV\n. X RUTA",
+    cincoFilasVaciasJunto,
+    106,
+    false,
+    {
+      tableWidth: 30,
+      minCellHeight: 2.2,
+      cellPadding: 1.4,
+      columnStyles: { 0: { cellWidth: 14 } },
+    },
+    268
+  );
+
+  // *! una sola celda
+  autoTable(doc, {
+    head: [[""]],
+    startY: 141, // 106 (startY de las tablas) + 5*2.2 (minCellHeight aprox) = 117
+    margin: { left: 250 },
+    tableWidth: 7,
+    styles: {
+      minCellHeight: 0.8,
+      cellPadding: 0.8,
+      lineWidth: 0.1,
+    },
+    headStyles: { fillColor: [255, 255, 255] },
+    theme: "grid",
+  });
+  autoTable(doc, {
+    head: [[""]],
+    startY: 141,
+    margin: { left: 259 },
+    tableWidth: 7,
+    styles: {
+      minCellHeight: 0.8,
+      cellPadding: 0.8,
+      lineWidth: 0.1,
+    },
+    headStyles: { fillColor: [255, 255, 255] },
+    theme: "grid",
+  });
+  autoTable(doc, {
+    head: [[""]],
+    startY: 141,
+    margin: { left: 268 },
+    tableWidth: 14,
+    styles: {
+      minCellHeight: 0.8,
+      cellPadding: 0.8,
+      lineWidth: 0.1,
+    },
+    headStyles: { fillColor: [255, 255, 255] },
+    theme: "grid",
+  });
+
   // ****Segunda columna de tablas****
 
-  tablaReportaRecibe(doc, head, body, 12, 30, {
+  tablaReportaRecibe(doc, head, body, 12, 27, {
     fontSize: 7, //fuente más grande
     minCellHeight: 3, //celdas más altas
     cellPadding: 1, //menos espacio interno
   });
-  tablaReportaRecibe(doc, head, body2, 53, 30, {
+  tablaReportaRecibe(doc, head, body2, 53, 27, {
     fontSize: 7, //fuente más grande
     minCellHeight: 0.66, //celdas más altas
     cellPadding: 0.66, //menos espacio interno
   });
 
   // Tabla horizontal alineada a la derecha de la vertical
-  tablaReportaRecibe(doc, head, body3, 106, 30, {
+  tablaReportaRecibe(doc, head, body3, 106, 27, {
     fontSize: 7, // ejemplo: fuente más grande
     minCellHeight: 3.2, // ejemplo: celdas más altas
     cellPadding: 0.95, // ejemplo: menos espacio interno
   });
 
   // SEGUNDO BLOQUE (duplicado a la derecha)
-  tablaReportaRecibe(doc, head, body, 12, 105, {
+  tablaReportaRecibe(doc, head, body, 12, 101, {
     fontSize: 7,
     minCellHeight: 3,
     cellPadding: 1,
   });
-  tablaReportaRecibe(doc, head, body2, 53, 105, {
+  tablaReportaRecibe(doc, head, body2, 53, 101, {
     fontSize: 7,
     minCellHeight: 0.66,
     cellPadding: 0.66,
   });
-  tablaReportaRecibe(doc, head, body3, 106, 105, {
+  tablaReportaRecibe(doc, head, body3, 106, 101, {
     fontSize: 7,
     minCellHeight: 3.2,
     cellPadding: 0.95,
   });
 
   // TERCER BLOQUE (duplicado más a la derecha)
-  tablaReportaRecibe(doc, head, body, 12, 180, {
+  tablaReportaRecibe(doc, head, body, 12, 175, {
     fontSize: 7,
     minCellHeight: 3,
     cellPadding: 1,
   });
-  tablaReportaRecibe(doc, head, body2, 53, 180, {
+  tablaReportaRecibe(doc, head, body2, 53, 175, {
     fontSize: 7,
     minCellHeight: 0.66,
     cellPadding: 0.66,
   });
-  tablaReportaRecibe(doc, head, body3, 106, 180, {
+  tablaReportaRecibe(doc, head, body3, 106, 175, {
     fontSize: 7,
     minCellHeight: 3.2,
     cellPadding: 0.95,
@@ -299,10 +479,38 @@ export const ReportePVO = () => {
   autoTable(doc, {
     head: [["", "", "", "", "", "", "", "1"]], // o sin head si no quieres encabezado
     startY: 141, // posición vertical (ajusta para subir/bajar)
-    margin: { left: 30 }, // posición horizontal (ajusta para mover a la derecha/izquierda)
-    tableWidth: 80, // ancho de la tabla (opcional)
+    margin: { left: 27 }, // posición horizontal (ajusta para mover a la derecha/izquierda)
+    tableWidth: 72, // ancho de la tabla (opcional)
     styles: {
-      minCellHeight: 6, // altura de celda
+      minCellHeight: 4, // altura de celda
+      cellPadding: 0.8,
+      lineWidth: 0.1,
+    },
+    headStyles: { fillColor: [255, 255, 255] }, // sin color en encabezado
+    theme: "grid",
+  });
+  // Fila de 4 celdas vacías
+  autoTable(doc, {
+    head: [["", "", "", "", "", "", "", "1"]], // o sin head si no quieres encabezado
+    startY: 141, // posición vertical (ajusta para subir/bajar)
+    margin: { left: 101 }, // posición horizontal (ajusta para mover a la derecha/izquierda)
+    tableWidth: 72, // ancho de la tabla (opcional)
+    styles: {
+      minCellHeight: 4, // altura de celda
+      cellPadding: 0.8,
+      lineWidth: 0.1,
+    },
+    headStyles: { fillColor: [255, 255, 255] }, // sin color en encabezado
+    theme: "grid",
+  });
+  // Fila de 4 celdas vacías
+  autoTable(doc, {
+    head: [["", "", "", "", "", "", "", "1"]], // o sin head si no quieres encabezado
+    startY: 141, // posición vertical (ajusta para subir/bajar)
+    margin: { left: 175 }, // posición horizontal (ajusta para mover a la derecha/izquierda)
+    tableWidth: 72, // ancho de la tabla (opcional)
+    styles: {
+      minCellHeight: 4, // altura de celda
       cellPadding: 0.8,
       lineWidth: 0.1,
     },
