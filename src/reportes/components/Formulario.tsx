@@ -9,7 +9,7 @@ import { validarCampos } from "../utils/validacion_inputs";
 import { ReportePVO } from "../shared/pdfs/ReportePVO";
 import { RepRegresoEco } from "../shared/pdfs/RepRegresoEco";
 import { RepSalidas } from "../shared/pdfs/RepSalidas";
-import { ProgressSpinner } from "primereact/progressspinner";
+import { NocheBusPDF } from "../shared/pdfs/NocheBusPDF";
 
 export const Formulario = () => {
   const toast = useRef<Toast>(null); // 1. Referencia para Toast
@@ -80,6 +80,7 @@ export const Formulario = () => {
   const pdfGenerators: Record<string, () => void> = {
     "1": ReportePVO,
     "5": RepRegresoEco,
+    "4": NocheBusPDF,
     "6": RepSalidas,
   };
 

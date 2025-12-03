@@ -1,81 +1,52 @@
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
-// import { logo_2024 } from "../../utils/logos";
+import { logoCdmx } from "../../utils/logos";
 
 export const NocheBusPDF = () => {
+  function agregarHeader(doc: jsPDF) {
+    // LOGO Y TEXTO ENCABEZADO
+    doc.addImage(logoCdmx, "JPEG", 15, 5, 55, 15);
+    doc.setFontSize(8);
+    const subtitle =
+      "RED DE TRANSPORTE DE PASAJEROS DE LA CIUDAD DE MEXICO\nDIRECCION EJECUTIVA DE OPERACION Y MANTENIMIENTO\nGERENCIA DE OPERACION DEL SERVICIO";
+    const x = doc.internal.pageSize.getWidth() - 100;
+    let y = 7;
+    const lines = subtitle.split("\n");
+    doc.setFont("helvetica", "bold");
+    doc.text(lines[0], x, y, { align: "left" });
+    doc.setFont("helvetica", "normal");
+    const lineHeight = 4;
+    for (let i = 1; i < lines.length; i++) {
+      y += lineHeight;
+      doc.text(lines[i], x, y, { align: "left" });
+    }
+
+    // TITULO PRINCIPAL
+    doc.setFontSize(8);
+    doc.setFont("helvetica");
+    const pageWidth = doc.internal.pageSize.getWidth();
+    doc.text("CONTROL DE EXPRESOS Y NOCHEBUS", pageWidth / 2, 30, {
+      align: "center",
+    });
+
+    const fechaHoy = new Date();
+    const dia = String(fechaHoy.getDate()).padStart(2, "0");
+    const mes = String(fechaHoy.getMonth() + 1).padStart(2, "0");
+    const anio = fechaHoy.getFullYear();
+    const fechaFormateada = `${dia}/${mes}/${anio}`;
+    // FECHA
+    doc.setFontSize(7);
+    doc.text(
+      "FECHA: " + fechaFormateada,
+      doc.internal.pageSize.getWidth() - 30,
+      35,
+      { align: "right" }
+    );
+    doc.setFont("helvetica", "normal");
+  }
+
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-  // Agrega el logo: (imagen, tipo, x, y, ancho, alto)
-  //   doc.addImage(logo_2024, "JPEG", 14, 5, 40, 15);
-  doc.setFontSize(8);
-  doc.text("CONTROL DE EXPRESOS Y NOCHEBUS", 50, 25);
-  doc.setFontSize(8);
-  doc.text(`FECHA: 26/10/2025`, 170, 25, { align: "left" });
-  // Tabla con header y títulos de columnas
-  // Encabezado: fila de título y fila de columnas
-
-  // Datos de ejemplo
-  const bodyData = Array.from({ length: 20 }, (_, i) => [
-    `ECO-${i + 1}`,
-    `${Math.floor(Math.random() * 10)}`,
-    `Conductor ${i + 1}`,
-    "Observación ejemplo",
-  ]);
-
-  autoTable(doc, {
-    startY: 42,
-    head: [
-      [
-        {
-          content: "TABLA DE NOCHEBUS",
-          colSpan: 4,
-          styles: {
-            halign: "center",
-            fontSize: 10,
-            fontStyle: "bold",
-            cellPadding: 3,
-          },
-        },
-      ],
-      ["ECO", "VUELTAS", "CONDUCTOR", "OBSERVACIONES"],
-    ],
-    body: bodyData,
-    styles: {
-      fontSize: 8,
-      cellPadding: 1.5,
-      halign: "center",
-      valign: "middle",
-      lineWidth: 0.3,
-      lineColor: [0, 0, 0],
-      overflow: "linebreak",
-      textColor: [0, 0, 0],
-      fillColor: [255, 255, 255],
-    },
-    headStyles: {
-      fillColor: [41, 128, 185],
-      textColor: 255,
-      fontStyle: "bold",
-      fontSize: 9,
-      lineWidth: 0.3,
-      lineColor: [0, 0, 0],
-      cellPadding: 2,
-    },
-    columnStyles: {
-      0: { cellWidth: 30, halign: "center" },
-      1: { cellWidth: 30, halign: "center" },
-      2: { cellWidth: 50, halign: "center" },
-      3: { cellWidth: 60, halign: "center" },
-    },
-    theme: "grid",
-    pageBreak: "auto",
-    rowPageBreak: "avoid",
-    showHead: "everyPage",
-    margin: { top: 42, bottom: 20, left: 10, right: 10 },
-    tableWidth: "auto",
-    didDrawPage: function (data: any) {
-      //   NocheBusPDF(doc);
-    },
-  });
-
+  agregarHeader(doc);
   // Puedes agregar más contenido aquí
   window.open(doc.output("bloburl"), "_blank");
 };
