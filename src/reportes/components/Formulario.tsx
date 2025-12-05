@@ -8,6 +8,7 @@ import { Toast } from "primereact/toast";
 import { validarCampos } from "../utils/validacion_inputs";
 import { ReportePVO } from "../shared/pdfs/ReportePVO";
 import { RepRegresoEco } from "../shared/pdfs/RepRegresoEco";
+import { Reporte_GacetaDespacho } from "../shared/pdfs/Reporte_GacetaDespacho";
 
 export const Formulario = () => {
   const toast = useRef<Toast>(null); // 1. Referencia para Toast
@@ -30,7 +31,7 @@ export const Formulario = () => {
     { name: "Reporte de Control de Radio", code: "3" },
     { name: "Reporte de Control de Expresos y Nochebus", code: "4" },
     { name: "Reporte de Control de Regresos de Autobuses", code: "5" },
-    { name: "Reporte Celdas 6", code: "6" }, // ...
+    { name: "Reporte Gaceta de Despacho", code: "6" }, // ...
   ];
 
   // Usa el hook aquí
@@ -75,14 +76,30 @@ export const Formulario = () => {
     }
   };
 
-  const pdfGenerators: Record<string, () => void> = {
+  // const pdfGenerators: Record<string, () => void> = {
+  //   "1": ReportePVO,
+  //   "5": RepRegresoEco,
+  //   "6": Reporte_GacetaDespacho,
+  // };
+
+  // const handleGenerarPDF = () => {
+  //   if (selectedTipoPdf?.code && pdfGenerators[selectedTipoPdf.code]) {
+  //     pdfGenerators[selectedTipoPdf.code]();
+  //   }
+  // };
+    // AHORA SI RECIBE TURNO Y FECHA
+  const pdfGenerators: Record<
+    string,
+    (turno: any, fecha: Date | null) => void
+  > = {
     "1": ReportePVO,
     "5": RepRegresoEco,
+    "6": Reporte_GacetaDespacho,
   };
 
   const handleGenerarPDF = () => {
     if (selectedTipoPdf?.code && pdfGenerators[selectedTipoPdf.code]) {
-      pdfGenerators[selectedTipoPdf.code]();
+      pdfGenerators[selectedTipoPdf.code](selectedTurno, selectedFecha);
     }
   };
 
