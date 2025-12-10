@@ -64,13 +64,16 @@ const subInputs_juridico: DynamicInput[] = [
 
 const subInput_observaciones: DynamicInput = { name:'motivo_desc_observaciones', label: 'Observaciones'}
 
-
+// solo para servicio, AGREGA EL INPUT PARA LA HORA DE LLEGADA DEL OPERADOR
+const subInputs_Servicio: DynamicInput[] = [
+    { name:'hora_entrada_operador', label: 'Entrada Operador', type:'time' },
+];
 
 //& Relacionar motivo_id con sus inputs (requeridos)
 // UseFetchGet(`${API}/api/caseta/pv-estados/motivos`) => {id, desc, tipo, eco_disponible, ...etc}[]
 export const subInputsCatalogo = {
     // Despacho
-    1:  [ ...subInputs_base_despacho],
+    1:  [ ...subInputs_base_despacho, ...subInputs_Servicio ],  // SERVICIO
     // // 2:  subInputs_cargaDiesel,    // eliminado
     3:  [ ...subInputs_base_despacho ],     // 	RE EMPLACAMIENTO
     4:  [ ...subInputs_base_despacho.slice(0, subInputs_base.length-3), ...subInputs_verificacion ],    // VERIFICACIÓN
@@ -81,6 +84,7 @@ export const subInputsCatalogo = {
     // 35: [ ...subInputs_base, ], // transferencia
     37: [ ...subInputs_base_despacho.slice(0, subInputs_base.length-3), ...subInputs_sefi ],            // RUTA-PRUEBA
     
+
     // Recepcion
     9:  [ ...subInputs_base, ...subInputs_terminoJornada],  // TERMINO DE JORNADA
     12: [ ...subInputs_base, ...subInputs_fallaMec],    // MANTENIMIENTO CORRECTIVO
@@ -110,4 +114,5 @@ export const subInputsCatalogo = {
     30: [ subInput_observaciones ],     // PROPUESTA PARA BAJA (PB)
     32: [ subInput_observaciones ],     // PROCESO ADMINISTRATIVO
     33: [ ...subInputs_juridico ],      // JURIDICO
+    
 }

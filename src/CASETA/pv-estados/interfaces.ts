@@ -14,7 +14,7 @@ export interface Result {
     ruta?:             string;              
     ruta_modalidad?:   string;              
     ruta_cc?:          string;              
-    op_cred?:          number;              
+    op_cred?:          number;                         
     op_turno?:         number;              
     extintor?:         string;              
     estatus:           number | string;     //!
@@ -79,6 +79,7 @@ export interface Data2PostNewEcoState {
     ruta_modalidad?:string;
     ruta_cc?:       string;
     op_cred?:       number;
+    hora_entrada_operador?: string;  
     op_turno?:      number;
     extintor?:      string;
     createdBy:      number;

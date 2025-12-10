@@ -160,6 +160,7 @@ const onFormSubmit = (e: SubmitState) => {
         ruta_cc:            d.other_cc || d.ruta_cc || undefined,
         op_cred:            d.op_cred,
         op_turno:           d.op_turno,
+        hora_entrada_operador:   d.hora_entrada_operador,
         extintor:           d.extintor2 ? `${d.extintor},${d.extintor2}`:d.extintor,
         createdBy:          d.user_cred as number, 
         createdBy_modulo:   d.modulo || d.user_modulo as number,
