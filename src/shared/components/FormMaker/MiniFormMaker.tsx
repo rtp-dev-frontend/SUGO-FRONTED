@@ -1,6 +1,6 @@
 import React from 'react'
 import { Control, FieldErrors, FieldValues, RegisterOptions, UseFormReturn } from 'react-hook-form';
-import { Input_Select, Input_Text } from '../inputs';
+import { Input_Select, Input_Text, Input_Mask } from '../inputs';
 import { InputTextProps } from 'primereact/inputtext';
 import { DropdownProps } from 'primereact/dropdown';
 import { Input_Calendar } from '../inputs/InputCalendar';
@@ -18,6 +18,7 @@ export type DynamicInput = {
     | { type?: 'text', inputClassName?: string, onChangeSetValue?: (value: string) => string } & InputTextProps
     | { type:  'calendar' } & CalendarProps
     | { type:  'select', options: SelectOption[], isLoading?: boolean } & DropdownProps
+    | { type:  'time' }
 )
 interface Props<T extends FieldValues> {
     // control: Control<any, any>,
@@ -54,6 +55,19 @@ export const MiniFormMaker = <Form extends FieldValues>({
                 name={name} label={label}  
                 rules={rules}
                 { ...rest as CalendarProps }
+            />
+            )
+
+            else if(input.type==='time') return (
+            <Input_Mask
+                key={name+index}
+                control={control} errors={errors}
+                name={name} label={label}
+                mask={'99:99:99'}
+                inputClassname={'p-float-label'}
+                className={'w-max'}
+                style={{ maxWidth: '12.5rem' }}
+                rules={rules}
             />
             )
 
