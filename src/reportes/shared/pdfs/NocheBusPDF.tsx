@@ -35,18 +35,67 @@ export const NocheBusPDF = () => {
     const anio = fechaHoy.getFullYear();
     const fechaFormateada = `${dia}/${mes}/${anio}`;
     // FECHA
-    doc.setFontSize(7);
+    doc.setFontSize(8);
     doc.text(
       "FECHA: " + fechaFormateada,
       doc.internal.pageSize.getWidth() - 30,
-      35,
+      30,
       { align: "right" }
     );
     doc.setFont("helvetica", "normal");
   }
 
+  // Encabezado con 'VUELTAS' como celda combinada (colSpan: 2)
+  const headRows = [
+    [
+      { content: "ECO", rowSpan: 2 },
+      { content: "", rowSpan: 2 },
+      { content: "VUELTAS", colSpan: 2, styles: { halign: "center" } },
+      { content: "", rowSpan: 2 },
+      { content: "", rowSpan: 2 },
+    ],
+  ];
+
+  // Cada fila tiene dos valores para 'VUELTAS'
+  const filas = Array.from({ length: 25 }, (_, i) => [
+    1001 + i, // ECO
+    `${" "}`, // RUTA
+    `${i + 1}-1`, // VUELTAS 1
+    `${i + 1}-2`, // VUELTAS 2
+    `${" "}`, // HORA DESINCORP. DE RUTA
+    `${" "}`, // HORA DE LLEGADA AL MODULO
+  ]);
+
+  function agregarTabla(doc, titulos, filas, startY = 40) {
+    autoTable(doc, {
+      startY,
+      head: headRows,
+      body: filas,
+      styles: {
+        fontSize: 8,
+        halign: "center",
+        valign: "middle",
+        lineWidth: 0.3,
+        lineColor: [0, 0, 0],
+        fillColor: [255, 255, 255],
+        textColor: 0,
+      },
+      headStyles: {
+        fillColor: [255, 255, 255],
+        textColor: 0,
+        fontStyle: "bold",
+        fontSize: 8,
+        lineWidth: 0.5,
+        lineColor: [0, 0, 0],
+      },
+      theme: "grid",
+      margin: { left: 5, right: 5 },
+      tableWidth: "auto",
+    });
+  }
+
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   agregarHeader(doc);
-  // Puedes agregar más contenido aquí
+  agregarTabla(doc, null, filas, 40); // Dibuja la tabla en el PDF
   window.open(doc.output("bloburl"), "_blank");
 };

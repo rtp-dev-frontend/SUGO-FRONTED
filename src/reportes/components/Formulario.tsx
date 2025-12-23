@@ -10,6 +10,7 @@ import { ReportePVO } from "../shared/pdfs/ReportePVO";
 import { RepRegresoEco } from "../shared/pdfs/RepRegresoEco";
 import { RepSalidas } from "../shared/pdfs/RepSalidas";
 import { NocheBusPDF } from "../shared/pdfs/NocheBusPDF";
+import { Reporte_GacetaDespacho } from "../shared/pdfs/Reporte_GacetaDespacho";
 
 export const Formulario = () => {
   const toast = useRef<Toast>(null); // 1. Referencia para Toast
@@ -27,8 +28,8 @@ export const Formulario = () => {
 
   // objeto con los tipos de PDF disponibles
   const tipoPDF = [
-    { name: "Reporte del P.V.O en tres horarios", code: "1" },
-    { name: "Reporte Telefonico de Siniestros", code: "2" },
+    { name: "Reporte del P.V.O en tres Horarios", code: "1" },
+    { name: "Reporte Gaceta de Despacho", code: "2" },
     { name: "Reporte de Control de Radio", code: "3" },
     { name: "Reporte de Control de Expresos y Nochebus", code: "4" },
     { name: "Reporte de Control de Regresos de Autobuses", code: "5" },
@@ -77,8 +78,24 @@ export const Formulario = () => {
     }
   };
 
-  const pdfGenerators: Record<string, () => void> = {
+  // const pdfGenerators: Record<string, () => void> = {
+  //   "1": ReportePVO,
+  //   "5": RepRegresoEco,
+  //   "6": Reporte_GacetaDespacho,
+  // };
+
+  // const handleGenerarPDF = () => {
+  //   if (selectedTipoPdf?.code && pdfGenerators[selectedTipoPdf.code]) {
+  //     pdfGenerators[selectedTipoPdf.code]();
+  //   }
+  // };
+  // AHORA SI RECIBE TURNO Y FECHA
+  const pdfGenerators: Record<
+    string,
+    (turno: any, fecha: Date | null) => void
+  > = {
     "1": ReportePVO,
+    "2": Reporte_GacetaDespacho,
     "5": RepRegresoEco,
     "4": NocheBusPDF,
     "6": RepSalidas,
@@ -86,7 +103,7 @@ export const Formulario = () => {
 
   const handleGenerarPDF = () => {
     if (selectedTipoPdf?.code && pdfGenerators[selectedTipoPdf.code]) {
-      pdfGenerators[selectedTipoPdf.code]();
+      pdfGenerators[selectedTipoPdf.code](selectedTurno, selectedFecha);
     }
   };
 

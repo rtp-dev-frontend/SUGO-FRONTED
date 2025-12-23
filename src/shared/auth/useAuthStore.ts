@@ -20,6 +20,7 @@ interface Store {
     sugo2rol0p10t1: boolean;
     sugo4rol0p10t1: boolean;
     sugo12cas: boolean;
+    sugo12caseta: boolean;
     sugo2cas0b1: boolean;
     sugo2cas0b2: boolean;
     sugo3cas0p10t2: boolean;
@@ -46,6 +47,7 @@ const initialState = {
     sugo12cum: false,
     sugo12pru: false,
     sugo12rol: false,
+    sugo12caseta: true,
     sugo2rol0p1: false,
     sugo2rol0p2: false,
     sugo1rol0p1: false,

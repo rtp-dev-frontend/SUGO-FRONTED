@@ -1,16 +1,15 @@
 import { Container, Header } from "../shared/components";
 import { TabView, TabPanel } from "primereact/tabview";
-import { Formulario } from "./components/Formulario";
+import { FormularioCaseta } from "./FormularioCaseta";
 
-const items = Array.from({ length: 5 });
-export const Index = () => {
+export const Caseta_ = () => {
   return (
     <>
       <Container>
         <Header />
         <TabView>
-          <TabPanel header="Filtro de reportes PDF">
-            <Formulario />
+          <TabPanel header="PV">
+            <FormularioCaseta />
           </TabPanel>
         </TabView>
       </Container>

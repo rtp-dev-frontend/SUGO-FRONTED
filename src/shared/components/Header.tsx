@@ -19,8 +19,14 @@ import { MenuItem } from "primereact/menuitem";
 
 export const Header = ({ links = undefined }: { links?: any[] }) => {
   const { user, logout } = useAuthStore();
-  const { sugo12cas, sugo12cum, sugo12pru, sugo12rol, sugo12capRol } =
-    useAuthStore((state) => state.permisosSUGO);
+  const {
+    sugo12cas,
+    sugo12caseta,
+    sugo12cum,
+    sugo12pru,
+    sugo12rol,
+    sugo12capRol,
+  } = useAuthStore((state) => state.permisosSUGO);
   const navigate = useNavigate();
 
   const allMenu: MenuItem[] = [];
@@ -50,6 +56,15 @@ export const Header = ({ links = undefined }: { links?: any[] }) => {
         navigate("/caseta");
       },
     });
+  if (sugo12caseta)
+    allMenu.push({
+      label: "Caseta_2",
+      icon: "pi pi-flag",
+      command: () => {
+        navigate("/caseta_");
+      },
+    });
+
   // NUEVO ROL
   if (sugo12rol)
     allMenu.push({

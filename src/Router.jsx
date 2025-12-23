@@ -7,6 +7,7 @@ import { CasetaPage } from "./CASETA";
 import { Index } from "./reportes";
 import { RolPage } from "./ROL-ECOyOP";
 import { Rol } from "./rol/Rol";
+import { Caseta_ } from "./caseta_";
 // import { PruebasPage } from './pruebas'
 import useAuthStore from "./shared/auth/useAuthStore";
 import { Container, Header } from "./shared/components";
@@ -25,10 +26,25 @@ const BackGround = () => (
 
 export const Router = () => {
   const logged = useAuthStore((state) => state.logged);
-  const { sugo12cas, sugo12cum, sugo12pru, sugo12rol, sugo12capRol } =
-    useAuthStore((state) => state.permisosSUGO);
+  const {
+    sugo12cas,
+    sugo12caseta,
+    sugo12cum,
+    sugo12pru,
+    sugo12rol,
+    sugo12capRol,
+  } = useAuthStore((state) => state.permisosSUGO);
 
-  if (!(sugo12cas || sugo12cum || sugo12pru || sugo12rol || sugo12capRol))
+  if (
+    !(
+      sugo12cas ||
+      sugo12caseta ||
+      sugo12cum ||
+      sugo12pru ||
+      sugo12rol ||
+      sugo12capRol
+    )
+  )
     msg = "No tienes permisos para ver contenido";
   else msg = undefined;
 
@@ -46,7 +62,9 @@ export const Router = () => {
           {sugo12rol &&
             <Route path='/rol' element={<RolPage />} />
           } */}
+
           {sugo12cas && <Route path="/caseta" element={<CasetaPage />} />}
+          {sugo12caseta && <Route path="/caseta_" element={<Caseta_ />} />}
           {sugo12rol && <Route path="/rol" element={<Rol />} />}
 
           {/* OPCIONES PRUEBA */}
