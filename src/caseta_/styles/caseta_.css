@@ -1,0 +1,9 @@
+.select-btn-small .p-button {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.8rem;
+  min-width: 80px;
+  height: 2.2rem;
+}
+.select-btn-small .p-button-label {
+  font-size: 0.8rem;
+}

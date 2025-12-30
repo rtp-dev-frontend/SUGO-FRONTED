@@ -56,6 +56,7 @@ export const Header = ({ links = undefined }: { links?: any[] }) => {
         navigate("/caseta");
       },
     });
+    // caseta_
   if (sugo12caseta)
     allMenu.push({
       label: "Caseta_2",
