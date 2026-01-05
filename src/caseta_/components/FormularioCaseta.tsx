@@ -7,7 +7,6 @@ import { useFormularioCaseta } from "../hooks/useFormulario"; // Hook personaliz
 import "../styles/caseta_.css"; // Estilos personalizados
 
 export const FormularioCaseta = () => {
-  // Desestructuramos los estados y funciones del hook personalizado
   const {
     modulosOptions, // Opciones para el dropdown de módulos
     selectedModulo, // Módulo seleccionado
@@ -16,39 +15,36 @@ export const FormularioCaseta = () => {
     economico, // Valor del input "Económico"
     setEconomico, // Función para cambiar el valor de "Económico"
     estado, // Valor seleccionado en el SelectButton
-    handleEstadoYTextoChange, // Función para cambiar el estado (no se usa aquí)
+    handleEstadoYTextoChange, // Función para cambiar el estado
     color, // Color de fondo de la Card
     text, // Texto de la etiqueta en la esquina superior derecha
-    // Función para cambiar el texto y el estado
+    handleEnableMotivos, // Función para habilitar el dropdown de motivos
+    motivosDisabled, // Estado de si el dropdown de motivos está deshabilitado
   } = useFormularioCaseta();
 
-  // Si los módulos están cargando, mostramos un mensaje
   if (loading) {
-    return <div>Cargando modulos...</div>;
+    return <div>Cargando módulos...</div>;
   }
 
   return (
     <>
       {/* Botones de acciones en la parte superior derecha */}
-      <div className="flex justify-content-end">
-        <Button label="Motivos" className=" m-2" severity="help" raised />
-        <Button label="Reportes" className=" m-2" severity="secondary" raised />
+      <div className="flex justify-content-end mb-3">
+        <Button label="Motivos" className="mr-2" severity="help" raised />
+        <Button label="Reportes" severity="secondary" raised />
       </div>
 
       {/* Contenedor principal centrado */}
-      <div
-        className="flex justify-content-center"
-        style={{ minHeight: "auto", maxWidth: "auto" }}
-      >
-        {/* Card principal del formulario */}
+      <div className="flex justify-content-center">
         <Card
-          title="Registrar nuevo estado del economico"
+          title="Registrar nuevo estado del económico"
           className="text-center"
           style={{
-            backgroundColor: color, // Color dinámico según el estado
+            backgroundColor: color,
             fontSize: "14px",
             padding: "2rem",
-            position: "relative", // Necesario para posicionar el span
+            position: "relative",
+            maxWidth: "600px",
           }}
         >
           {/* Etiqueta en la esquina superior derecha */}
@@ -65,57 +61,69 @@ export const FormularioCaseta = () => {
               fontWeight: "bold",
             }}
           >
-            {text} {/* Texto dinámico según el estado */}
+            {text}
           </span>
-          {/* Fila de inputs alineados horizontalmente */}
-          <div
-            className="flex align-items-end gap-6 mb-0"
-            style={{ width: "0 auto", margin: "0 auto" }}
-          >
+
+          {/* Inputs alineados horizontalmente */}
+          <div className="flex flex-row gap-3 align-items-center">
             {/* Dropdown de módulos */}
-            <div style={{ width: "180px" }}>
-              <label htmlFor="modulo" className="form-label mb-1">
-                Modulo
-              </label>
-              <Dropdown
-                inputId="modulo"
-                value={selectedModulo}
-                onChange={(e) => setSelectedModulo(e.value)}
-                options={modulosOptions}
-                optionLabel="label"
-                optionValue="value"
-                className="w-100"
-                style={{ height: "2.2rem" }}
-                placeholder="Selecciona un modulo"
-              />
-            </div>
-            {/* Input de texto para "Económico" */}
-            <div style={{ width: "170px" }}>
-              <span className="p-float-label w-100">
-                <InputText
-                  id="username"
-                  value={economico}
-                  onChange={(e) => setEconomico(e.target.value)}
-                  style={{ height: "2.2rem" }}
+            <div className="flex-1">
+              <span className="p-float-label w-full">
+                <Dropdown
+                  inputId="modulo"
+                  value={selectedModulo}
+                  onChange={(e) => setSelectedModulo(e.value)}
+                  options={modulosOptions}
+                  optionLabel="label"
+                  optionValue="value"
+                  className="w-full"
+                  placeholder="Selecciona un módulo"
                 />
-                <label htmlFor="username">Economico</label>
+                <label htmlFor="modulo">Módulo</label>
               </span>
             </div>
-            {/* SelectButton para elegir el estado */}
-            <div style={{ width: "175px" }}>
-              <SelectButton
-                value={estado}
-                onChange={handleEstadoYTextoChange}
-                options={[
-                  { label: "Recepción", value: "Recepción" },
-                  { label: "Actualizacion", value: "Actualizacion" },
-                ]}
-                className="select-btn-small"
-                style={{ height: "2.2rem", width: "100%", fontSize: "20px" }}
-              />
+
+            {/* Input de texto para "Económico" con label dentro */}
+            <div className="flex-1">
+              <span className="p-float-label w-full">
+                <InputText
+                  id="economico"
+                  value={economico}
+                  onChange={(e) => setEconomico(e.target.value)}
+                  className="w-full"
+                />
+                <label htmlFor="economico">Económico</label>
+              </span>
             </div>
           </div>
-          <div className="flex justify-content-center align-items-center mt-7 gap-3">
+
+          {/* SelectButton para elegir el estado */}
+          <div className="mt-3">
+            <SelectButton
+              value={estado}
+              onChange={(e) => {
+                handleEstadoYTextoChange(e);
+                handleEnableMotivos(); // Habilitar el Dropdown al cambiar el estado
+              }}
+              options={[
+                { label: "Despacho", value: "Despacho" },
+                { label: "Actualización", value: "Actualización" },
+              ]}
+              className="w-full"
+            />
+          </div>
+
+          {/* Dropdown deshabilitado como placeholder */}
+          <div className="flex-1">
+            <Dropdown
+              disabled={motivosDisabled}
+              placeholder="Motivo"
+              className="w-full md:w-14rem mt-3"
+            />
+          </div>
+
+          {/* Botones de acción */}
+          <div className="flex justify-content-center gap-3 mt-4">
             <Button label="Enviar" severity="success" />
             <Button label="Cancelar" severity="danger" />
           </div>

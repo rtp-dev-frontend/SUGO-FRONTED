@@ -18,6 +18,8 @@ export function useFormularioCaseta() {
   const [color, setColor] = useState("#EEEEEE");
   // Estado para el texto de la etiqueta (span) en la esquina superior derecha
   const [text, setText] = useState("Actualización");
+  // estado para controlar la habilitacion del dropdown de motivos
+  const [motivosDisabled, setMotivosDisabled] = useState(true);
 
   // useEffect para cargar los módulos al montar el componente
   useEffect(() => {
@@ -49,6 +51,10 @@ export function useFormularioCaseta() {
     value: m.id, // Valor que se guarda
   }));
 
+  // habilitar el dropdown de motivos al cambiar de estato
+  const handleEnableMotivos = () => {
+    setMotivosDisabled(false);
+  };
   // Devuelve todos los estados y funciones necesarias para el formulario
   return {
     modulosOptions,
@@ -61,5 +67,7 @@ export function useFormularioCaseta() {
     handleEstadoYTextoChange,
     color,
     text,
+    handleEnableMotivos,
+    motivosDisabled,
   };
 }
