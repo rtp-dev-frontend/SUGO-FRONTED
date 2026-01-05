@@ -21,6 +21,7 @@ import { TablaCRUD } from '../../shared/components/Tabla';
 
 
 
+
 const API = import.meta.env.VITE_SUGO_BackTS
 
 
@@ -203,6 +204,7 @@ const botonesReportes: ButtonProps[] = [
     { label: 'Rutas SWAP' },
     { label: 'Salidas por Día' },
     { label: 'Salidas por Ruta' },
+    {label: "Reportes PV"}
 ]
 
 
@@ -219,6 +221,7 @@ const DialogReportes = () => {
         <PVestadosRutas />,
         <SalidasporDia />,
         <SalidasRutas />
+
     ]
 
     // Eliminar elemento "clearFilter" de las tablas creadas con <tablaCRUD>
