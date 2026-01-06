@@ -110,12 +110,8 @@ export const Formulario = () => {
   return (
     <>
       <Toast ref={toast} />
-      <div className="flex justify-content-center  align-content-center">
-        <Card
-          title="Filtro de Reportes"
-          className="text-center"
-          style={{ width: "38rem", backgroundColor: "#EEEEEE" }}
-        >
+      <h2 className='text-center'>Reportes de Gaceta</h2>
+      <div className="flex justify-content-center align-content-center mt-5">
           <div className="flex gap-2">
             <Dropdown
               value={selectedTipoPdf}
@@ -152,17 +148,17 @@ export const Formulario = () => {
               />
             </>
           </div>
-          <div className="flex justify-content-center mt-4">
-            <Button
-              label="Filtrar"
-              severity="success"
-              icon="pi pi-search"
-              onClick={handleFiltrar}
-            />
-          </div>
-        </Card>
       </div>
-
+      <div className='mt-3 w-12 flex-center'>
+          <Button
+              type='submit'
+              label='Buscar'
+              icon='pi pi-search'
+              onClick={handleFiltrar}
+              rounded
+          />
+      </div>
+         
       {mostrarPdf && (
         <div className="d-flex justify-content-center gap-2 mt-3">
           <div className="text-center mt-4">

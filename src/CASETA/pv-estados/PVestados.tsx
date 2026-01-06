@@ -10,6 +10,7 @@ import { UseFetchGet, UseFetchPost } from '../../shared/helpers-HTTP'
 import useAuthStore from '../../shared/auth/useAuthStore';
 import { Dropdown } from 'primereact/dropdown';
 import { EcosConSuModalidad } from './components/EcosConSuModalidad';
+import { Formulario } from '../../reportes/components/Formulario';
 import { ReportesCaseta } from '../reportes';
 import { Dialog } from 'primereact/dialog';
 import { removeHTMLelements } from '../../shared/helpers/forHTML';
@@ -204,7 +205,7 @@ const botonesReportes: ButtonProps[] = [
     { label: 'Rutas SWAP' },
     { label: 'Salidas por Día' },
     { label: 'Salidas por Ruta' },
-    {label: "Reportes PV"}
+    {label: "Reportes de Gaceta"}
 ]
 
 
@@ -220,7 +221,8 @@ const DialogReportes = () => {
         <EcosConSuModalidad />,
         <PVestadosRutas />,
         <SalidasporDia />,
-        <SalidasRutas />
+        <SalidasRutas />,
+        <Formulario />,
 
     ]
 
