@@ -11,7 +11,6 @@ export const FormularioCaseta = () => {
     modulosOptions, // Opciones para el dropdown de módulos
     selectedModulo, // Módulo seleccionado
     setSelectedModulo, // Función para cambiar el módulo seleccionado
-    loading, // Estado de carga de los módulos
     economico, // Valor del input "Económico"
     setEconomico, // Función para cambiar el valor de "Económico"
     estado, // Valor seleccionado en el SelectButton
@@ -20,11 +19,10 @@ export const FormularioCaseta = () => {
     text, // Texto de la etiqueta en la esquina superior derecha
     handleEnableMotivos, // Función para habilitar el dropdown de motivos
     motivosDisabled, // Estado de si el dropdown de motivos está deshabilitado
+    motivos, // Lista de motivos obtenidos
+    motivosOptions, // Opciones para el dropdown de motivos
+    setMotivos, // Función para cambiar la lista de motivos
   } = useFormularioCaseta();
-
-  if (loading) {
-    return <div>Cargando módulos...</div>;
-  }
 
   return (
     <>
@@ -119,6 +117,10 @@ export const FormularioCaseta = () => {
               disabled={motivosDisabled}
               placeholder="Motivo"
               className="w-full md:w-14rem mt-3"
+              inputId="Motivos"
+              value={motivos}
+              onChange={(e) => setMotivos(e.value)}
+              options={motivosOptions}
             />
           </div>
 

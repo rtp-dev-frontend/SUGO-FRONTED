@@ -7,3 +7,30 @@
 .select-btn-small .p-button-label {
   font-size: 0.8rem;
 }
+
+/* ...existing code... */
+
+@media (max-width: 460px) {
+  .flex-row {
+    flex-direction: row !important;
+    gap: 0.5rem !important;
+  }
+  .flex-1 {
+    min-width: 0;
+    flex: 1 1 0;
+  }
+  .p-float-label.w-full {
+    width: 100%;
+  }
+  .p-card {
+    padding: 1rem !important;
+    max-width: 98vw !important;
+  }
+  .w-full {
+    width: 100% !important;
+  }
+  .md\:w-14rem {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+}
