@@ -4,6 +4,10 @@ import { Dropdown } from "primereact/dropdown"; // Dropdown de PrimeReact
 import { InputText } from "primereact/inputtext"; // Input de texto de PrimeReact
 import { SelectButton } from "primereact/selectbutton"; // Botón de selección múltiple de PrimeReact
 import { useFormularioCaseta } from "../hooks/useFormulario"; // Hook personalizado con la lógica del formulario
+import { RadioButton } from "primereact/radiobutton"; // RadioButton de PrimeReact
+import { Checkbox } from "primereact/checkbox"; // Checkbox de PrimeReact
+import { InputMask } from "primereact/inputmask"; // InputMask de PrimeReact
+
 import "../styles/caseta_.css"; // Estilos personalizados
 
 export const FormularioCaseta = () => {
@@ -19,9 +23,9 @@ export const FormularioCaseta = () => {
     text, // Texto de la etiqueta en la esquina superior derecha
     handleEnableMotivos, // Función para habilitar el dropdown de motivos
     motivosDisabled, // Estado de si el dropdown de motivos está deshabilitado
-    motivos, // Lista de motivos obtenidos
     motivosOptions, // Opciones para el dropdown de motivos
-    setMotivos, // Función para cambiar la lista de motivos
+    motivoSeleccionado, // Motivo seleccionado
+    setMotivoSeleccionado, // Función para cambiar el motivo seleccionado
   } = useFormularioCaseta();
 
   return (
@@ -35,14 +39,21 @@ export const FormularioCaseta = () => {
       {/* Contenedor principal centrado */}
       <div className="flex justify-content-center">
         <Card
-          title="Registrar nuevo estado del económico"
+          title={
+            <span className="titulo-caseta">
+              Registrar nuevo estado del <br />
+              económico
+            </span>
+          }
           className="text-center"
           style={{
             backgroundColor: color,
             fontSize: "14px",
-            padding: "2rem",
+            padding: "0rem 2rem 2rem 2rem",
             position: "relative",
             maxWidth: "600px",
+            borderRadius: "20px",
+            width: "100%",
           }}
         >
           {/* Etiqueta en la esquina superior derecha */}
@@ -51,18 +62,18 @@ export const FormularioCaseta = () => {
               position: "absolute",
               top: ".5rem",
               right: ".5rem",
-              background: "#4caf50",
+              background: "#5a5858ff",
               color: "#fff",
               padding: "0.3rem 0.8rem",
-              borderRadius: "8px",
-              fontSize: "0.6rem",
+              borderRadius: "3px",
+              fontSize: "0.7rem",
               fontWeight: "bold",
+              marginTop: "0.8rem",
             }}
           >
             {text}
           </span>
 
-          {/* Inputs alineados horizontalmente */}
           <div className="flex flex-row gap-3 align-items-center">
             {/* Dropdown de módulos */}
             <div className="flex-1">
@@ -81,7 +92,7 @@ export const FormularioCaseta = () => {
               </span>
             </div>
 
-            {/* Input de texto para "Económico" con label dentro */}
+            {/* Input de texto para "Económico" */}
             <div className="flex-1">
               <span className="p-float-label w-full">
                 <InputText
@@ -93,22 +104,40 @@ export const FormularioCaseta = () => {
                 <label htmlFor="economico">Económico</label>
               </span>
             </div>
-          </div>
 
-          {/* SelectButton para elegir el estado */}
-          <div className="mt-3">
-            <SelectButton
-              value={estado}
-              onChange={(e) => {
-                handleEstadoYTextoChange(e);
-                handleEnableMotivos(); // Habilitar el Dropdown al cambiar el estado
-              }}
-              options={[
-                { label: "Despacho", value: "Despacho" },
-                { label: "Actualización", value: "Actualización" },
-              ]}
-              className="w-full"
-            />
+            {/* Radio buttons verticales a la derecha */}
+            <div className="flex flex-column radio-container gap-1 ml-1">
+              <div className="flex align-items-center">
+                <RadioButton
+                  inputId="ingredient1"
+                  name="estado"
+                  value="Despacho"
+                  checked={estado === "Despacho"}
+                  onChange={(e) => {
+                    handleEstadoYTextoChange(e);
+                    handleEnableMotivos();
+                  }}
+                />
+                <label htmlFor="ingredient1" className="ml-2">
+                  Despacho
+                </label>
+              </div>
+              <div className="flex align-items-center">
+                <RadioButton
+                  inputId="ingredient2"
+                  name="estado"
+                  value="Actualización"
+                  checked={estado === "Actualización"}
+                  onChange={(e) => {
+                    handleEstadoYTextoChange(e);
+                    handleEnableMotivos();
+                  }}
+                />
+                <label htmlFor="ingredient2" className="ml-2">
+                  Actualización
+                </label>
+              </div>
+            </div>
           </div>
 
           {/* Dropdown deshabilitado como placeholder */}
@@ -118,9 +147,23 @@ export const FormularioCaseta = () => {
               placeholder="Motivo"
               className="w-full md:w-14rem mt-3"
               inputId="Motivos"
-              value={motivos}
-              onChange={(e) => setMotivos(e.value)}
+              value={motivoSeleccionado}
+              onChange={(e) => setMotivoSeleccionado(e.value)}
               options={motivosOptions}
+            />
+            <div className="p-checkbox gap-2 ">
+              <Checkbox
+                style={{
+                  marginLeft: "1rem",
+                }}
+              ></Checkbox>
+            </div>
+            <InputMask
+              mask="99-999999"
+              placeholder="99-999999"
+              className=""
+              disabled
+              style={{ marginLeft: "2rem", width: "150px" }}
             />
           </div>
 

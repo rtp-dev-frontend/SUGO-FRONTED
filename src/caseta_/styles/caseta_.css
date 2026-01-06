@@ -8,9 +8,14 @@
   font-size: 0.8rem;
 }
 
-/* ...existing code... */
+.flex-row {
+  display: flex;
+  flex-wrap: nowrap; /* NO wrap en escritorio */
+  gap: 1rem;
+  align-items: center;
+}
 
-@media (max-width: 460px) {
+@media (max-width: 768px) {
   .flex-row {
     flex-direction: row !important;
     gap: 0.5rem !important;
@@ -29,8 +34,17 @@
   .w-full {
     width: 100% !important;
   }
-  .md\:w-14rem {
+  /* .md\:w-14rem {
     width: 100% !important;
     min-width: 0 !important;
-  }
+  } */
+}
+
+
+
+.titulo-caseta {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0;
 }
