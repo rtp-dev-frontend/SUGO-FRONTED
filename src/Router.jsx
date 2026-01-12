@@ -4,7 +4,6 @@ import { Route, Routes } from "react-router-dom";
 import { CumplimientoPage } from "./CUMPLIMIENTO";
 import { HomePage } from "./HOME";
 import { CasetaPage } from "./CASETA";
-import { Index } from "./reportes";
 import { RolPage } from "./ROL-ECOyOP";
 import { Rol } from "./rol/Rol";
 import { Caseta_ } from "./caseta_";
@@ -67,8 +66,6 @@ export const Router = () => {
           {sugo12caseta && <Route path="/caseta_" element={<Caseta_ />} />}
           {sugo12rol && <Route path="/rol" element={<Rol />} />}
 
-          {/* OPCIONES PRUEBA */}
-          {sugo12pru && <Route path="/reportes" element={<Index />} />}
           {/* <Route path='/dunderm' element={<UnderConstructionPage/>} />
         { */}
 

@@ -75,15 +75,6 @@ export const Header = ({ links = undefined }: { links?: any[] }) => {
         navigate("/rol");
       },
     });
-  // Reportes
-  if (sugo12pru)
-    allMenu.push({
-      label: "Reportes",
-      icon: "pi pi-file",
-      command: () => {
-        navigate("/reportes");
-      },
-    });
 
   const items = links || allMenu;
   // [
