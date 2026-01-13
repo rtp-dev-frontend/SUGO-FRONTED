@@ -12,6 +12,8 @@ import { RepSalidas } from "../shared/pdfs/RepSalidas";
 import { NocheBusPDF } from "../shared/pdfs/NocheBusPDF";
 import { Reporte_GacetaDespacho } from "../shared/pdfs/Reporte_GacetaDespacho";
 
+// ! pasar todo a nueva estructura del sugo
+
 export const Formulario = () => {
   const toast = useRef<Toast>(null); // 1. Referencia para Toast
   const [mostrarPdf, setMostrarPdf] = useState(false);
@@ -78,17 +80,15 @@ export const Formulario = () => {
     }
   };
 
-  // const pdfGenerators: Record<string, () => void> = {
-  //   "1": ReportePVO,
-  //   "5": RepRegresoEco,
-  //   "6": Reporte_GacetaDespacho,
-  // };
+  const handleLimpiar = () => {
+    setSelectedTipoPdf(null);
+    setSelectedTurno(null);
+    setSelectedFecha(null);
+  };
 
-  // const handleGenerarPDF = () => {
-  //   if (selectedTipoPdf?.code && pdfGenerators[selectedTipoPdf.code]) {
-  //     pdfGenerators[selectedTipoPdf.code]();
-  //   }
-  // };
+  
+
+
   // AHORA SI RECIBE TURNO Y FECHA
   const pdfGenerators: Record<
     string,
@@ -110,55 +110,59 @@ export const Formulario = () => {
   return (
     <>
       <Toast ref={toast} />
-      <h2 className='text-center'>Reportes de Gaceta</h2>
+      <h2 className="text-center">Reportes de Gaceta</h2>
       <div className="flex justify-content-center align-content-center mt-5">
-          <div className="flex gap-2">
+        <div className="flex gap-2">
+          <Dropdown
+            value={selectedTipoPdf}
+            onChange={handleTipoPdfChange}
+            options={tipoPDF}
+            optionLabel="name"
+            placeholder="Tipo de pdf"
+            className={
+              pdfError ? "p-invalid w-full md:w-14rem" : "w-full md:w-14rem"
+            }
+          />
+          <>
             <Dropdown
-              value={selectedTipoPdf}
-              onChange={handleTipoPdfChange}
-              options={tipoPDF}
-              optionLabel="name"
-              placeholder="Tipo de pdf"
+              value={selectedTurno}
+              onChange={handleTurnoChange}
+              options={turnos}
+              optionLabel="label"
+              placeholder="Turno"
               className={
-                pdfError ? "p-invalid w-full md:w-14rem" : "w-full md:w-14rem"
+                turnoError ? "p-invalid w-full md:w-14rem" : "w-full md:w-14rem"
               }
             />
-            <>
-              <Dropdown
-                value={selectedTurno}
-                onChange={handleTurnoChange}
-                options={turnos}
-                optionLabel="label"
-                placeholder="Turno"
-                className={
-                  turnoError
-                    ? "p-invalid w-full md:w-14rem"
-                    : "w-full md:w-14rem"
-                }
-              />
-              <Calendar
-                placeholder="Seleccione Fecha"
-                value={selectedFecha}
-                onChange={handleFechaChange}
-                className={
-                  fechaError
-                    ? "p-invalid w-full md:w-14rem"
-                    : "w-full md:w-14rem"
-                }
-              />
-            </>
-          </div>
+            <Calendar
+              placeholder="Seleccione Fecha"
+              value={selectedFecha}
+              onChange={handleFechaChange}
+              className={
+                fechaError ? "p-invalid w-full md:w-14rem" : "w-full md:w-14rem"
+              }
+            />
+          </>
+        </div>
       </div>
-      <div className='mt-3 w-12 flex-center'>
-          <Button
-              type='submit'
-              label='Buscar'
-              icon='pi pi-search'
-              onClick={handleFiltrar}
-              rounded
-          />
+      <div className="mt-3 w-12 gap-3 flex-center">
+        <Button
+          type="submit"
+          label="Buscar"
+          icon="pi pi-search"
+          onClick={handleFiltrar}
+          rounded
+        />
+        <Button
+          type="submit"
+          label="Limpiar"
+          severity="danger"
+          icon="pi pi-times"
+          onClick={handleLimpiar}
+          rounded
+        />
       </div>
-         
+
       {mostrarPdf && (
         <div className="d-flex justify-content-center gap-2 mt-3">
           <div className="text-center mt-4">
