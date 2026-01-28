@@ -12,8 +12,6 @@ import { RepSalidas } from "../shared/pdfs/RepSalidas";
 import { NocheBusPDF } from "../shared/pdfs/NocheBusPDF";
 import { Reporte_GacetaDespacho } from "../shared/pdfs/Reporte_GacetaDespacho";
 
-// ! pasar todo a nueva estructura del sugo
-
 export const Formulario = () => {
   const toast = useRef<Toast>(null); // 1. Referencia para Toast
   const [mostrarPdf, setMostrarPdf] = useState(false);
@@ -80,15 +78,17 @@ export const Formulario = () => {
     }
   };
 
-  const handleLimpiar = () => {
-    setSelectedTipoPdf(null);
-    setSelectedTurno(null);
-    setSelectedFecha(null);
-  };
+  // const pdfGenerators: Record<string, () => void> = {
+  //   "1": ReportePVO,
+  //   "5": RepRegresoEco,
+  //   "6": Reporte_GacetaDespacho,
+  // };
 
-  
-
-
+  // const handleGenerarPDF = () => {
+  //   if (selectedTipoPdf?.code && pdfGenerators[selectedTipoPdf.code]) {
+  //     pdfGenerators[selectedTipoPdf.code]();
+  //   }
+  // };
   // AHORA SI RECIBE TURNO Y FECHA
   const pdfGenerators: Record<
     string,
@@ -145,20 +145,12 @@ export const Formulario = () => {
           </>
         </div>
       </div>
-      <div className="mt-3 w-12 gap-3 flex-center">
+      <div className="mt-3 w-12 flex-center">
         <Button
           type="submit"
           label="Buscar"
           icon="pi pi-search"
           onClick={handleFiltrar}
-          rounded
-        />
-        <Button
-          type="submit"
-          label="Limpiar"
-          severity="danger"
-          icon="pi pi-times"
-          onClick={handleLimpiar}
           rounded
         />
       </div>

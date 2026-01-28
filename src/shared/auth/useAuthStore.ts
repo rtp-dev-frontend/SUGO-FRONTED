@@ -19,7 +19,10 @@ interface Store {
     sugo1rol0p1: boolean;
     sugo2rol0p10t1: boolean;
     sugo4rol0p10t1: boolean;
+    // #! Agregar nuevos permisos
+    sugo12reportesGaceta: boolean;
     sugo12cas: boolean;
+
     sugo12caseta: boolean;
     sugo2cas0b1: boolean;
     sugo2cas0b2: boolean;
@@ -53,7 +56,10 @@ const initialState = {
     sugo1rol0p1: false,
     sugo2rol0p10t1: false,
     sugo4rol0p10t1: false,
+    //!
     sugo12cas: false,
+    sugo12reportesGaceta: false,
+    //!
     sugo2cas0b1: false,
     sugo2cas0b2: false,
     sugo3cas0p10t2: false,
@@ -81,7 +87,7 @@ const useAuthStore = create<Store & Actions>()((set, get): Store & Actions => ({
         modulo,
         credencial,
         appId,
-      })
+      }),
     );
 
     set((state) => ({

@@ -39,6 +39,7 @@ export const CasetaPage = () => {
         <TabPanel header="PV">
           <PVestados />
         </TabPanel>
+        <TabPanel header="Hora de presentacion">{/* <PVestados /> */}</TabPanel>
 
         {/* <TabPanel header='Reportes'>
                 <ReportesCaseta /> 

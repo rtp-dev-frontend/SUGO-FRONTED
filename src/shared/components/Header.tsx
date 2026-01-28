@@ -12,6 +12,9 @@ import { Button } from "primereact/button";
 import useAuthStore from "../auth/useAuthStore";
 import { MenuItem } from "primereact/menuitem";
 
+//! Nuevo store para reportes gaceta
+import { useReportesGacetaStore } from "../store/useReportesGaceta.store";
+
 /**
  * HeaderComponent
  * @param {array?} links array de {label: 'abc', icon: 'pi pi-check', command: () => { navigate('/abc'); }  },
@@ -26,6 +29,7 @@ export const Header = ({ links = undefined }: { links?: any[] }) => {
     sugo12pru,
     sugo12rol,
     sugo12capRol,
+    sugo12reportesGaceta,
   } = useAuthStore((state) => state.permisosSUGO);
   const navigate = useNavigate();
 
@@ -56,7 +60,7 @@ export const Header = ({ links = undefined }: { links?: any[] }) => {
         navigate("/caseta");
       },
     });
-    // caseta_
+  // caseta_
   if (sugo12caseta)
     allMenu.push({
       label: "Caseta_2",
@@ -73,6 +77,16 @@ export const Header = ({ links = undefined }: { links?: any[] }) => {
       icon: "pi pi-calendar",
       command: () => {
         navigate("/rol");
+      },
+    });
+  // NUEVO reportes gaceta
+  if (sugo12reportesGaceta)
+    allMenu.push({
+      label: "Reportes Gaceta",
+      icon: "pi pi-book",
+      command: () => {
+        useReportesGacetaStore.getState().open(); // <-- abre el modal globalmente
+        navigate("/caseta"); // Opcional: navega a la ruta de caseta si es necesario
       },
     });
 
@@ -105,7 +119,8 @@ export const Header = ({ links = undefined }: { links?: any[] }) => {
     <span className="flex align-items-center justify-content-between">
       <h3>
         {" "}
-        {user.nombre} <span className="text-green-400">M{user.modulo}</span>{" "}
+        {user.nombre}{" "}
+        <span className="text-green-400">M{user.modulo}</span>{" "}
       </h3>
       <Avatar icon="pi pi-user" className="mr-5 ml-2 p-avatar-primary" />
       <Button
@@ -131,6 +146,6 @@ Header.propTypes = {
       label: PropTypes.string,
       icon: PropTypes.string,
       command: PropTypes.func,
-    })
+    }),
   ),
 };
