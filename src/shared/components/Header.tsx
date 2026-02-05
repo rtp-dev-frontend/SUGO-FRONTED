@@ -23,6 +23,7 @@ import { useReportesGacetaStore } from "../store/useReportesGaceta.store";
 export const Header = ({ links = undefined }: { links?: any[] }) => {
   const { user, logout } = useAuthStore();
   const {
+    sugo12Despacho,
     sugo12cas,
     sugo12caseta,
     sugo12cum,
@@ -51,6 +52,16 @@ export const Header = ({ links = undefined }: { links?: any[] }) => {
   //     navigate('/cumplimiento');
   //   }
   // })
+
+  //Despacho
+  if (sugo12Despacho)
+    allMenu.push({
+      label: "Despacho",
+      icon: "pi pi-check",
+      command: () => {
+        navigate("/Despacho");
+      },
+    });
   // caseta
   if (sugo12cas)
     allMenu.push({
@@ -60,6 +71,7 @@ export const Header = ({ links = undefined }: { links?: any[] }) => {
         navigate("/caseta");
       },
     });
+
   // caseta_
   if (sugo12caseta)
     allMenu.push({
