@@ -9,7 +9,6 @@ import { ConfirmDialog } from 'primereact/confirmdialog';
 const API = import.meta.env.VITE_SUGO_BackTS
 
 
-
 const OPTS_MODS = [ 
     { name: 'M01', value: 1},
     { name: 'M02', value: 2},
@@ -20,8 +19,6 @@ const OPTS_MODS = [
     { name: 'M06', value: 6},
     { name: 'M07', value: 7}
 ]
-
-
 
 interface RutasDBSUGO {
     id:             number;
