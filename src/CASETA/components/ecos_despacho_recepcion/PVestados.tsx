@@ -169,7 +169,7 @@ const getMotivosDesc = (formData: Record<string, any>, str='motivo_desc_') => {
     });
 
     const res = JSON.stringify(obj)==='{}' ? 'null':JSON.stringify(obj)
-
+-
     return JSON.parse(res)
 }
 
@@ -687,6 +687,8 @@ export const PVestados = () => {
             </> 
             : <></>
             }
+
+            
 
             {/* //& Reloj */}
             <div className='flex-center gap-2'>

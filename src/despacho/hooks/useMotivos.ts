@@ -16,8 +16,6 @@ export function UseMotivos() {
       ...m,
       label: m.desc,
       value: m.id,
-      
     }));
   return { motivosOptions };
 }
-

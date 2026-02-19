@@ -5,6 +5,10 @@ import { InputText } from "primereact/inputtext"; // Input de texto de PrimeReac
 import { Button } from "primereact/button"; // Botones de PrimeReact
 import { useFormularioDespacho } from "../hooks/useFormulario"; // Hook personalizado para obtener opciones de módulos y motivos
 import { InputMask } from "primereact/inputmask"; // InputMask de PrimeReact para campos con formato específico
+import { Checkbox } from "primereact/checkbox"; // Checkbox de PrimeReact para opciones booleanas
+import { useDateNow } from "../hooks/useDateNow"; // importa el hook directamente
+import { useEcoEstado } from "../hooks/useEco"; // Hook personalizado para obtener el estado del eco
+
 export const FormularioDespacho = () => {
   // Definición del tipo para las opciones de motivo
   type MotivoOption = {
@@ -24,7 +28,8 @@ export const FormularioDespacho = () => {
   ];
 
   // Obtiene las opciones de módulos y motivos desde el hook personalizado
-  const { modulosOptions, motivosOptions } = useFormularioDespacho();
+  const { modulosOptions, motivosOptions, modalidadesOptions, rutasOptions } =
+    useFormularioDespacho();
 
   // Estado para el módulo seleccionado en el dropdown
   const [selectModulo, setSelectModulo] = useState(null);
@@ -34,8 +39,34 @@ export const FormularioDespacho = () => {
     null,
   );
 
+  // estado para las modadlidades
+  const [modalidadSeleccionada, setModalidadSeleccionada] = useState<
+    number | null
+  >(null);
+
   // estado para el tipo de planta o postura
   const [plantaPostura, setPlantaPostura] = useState<string | null>(null);
+
+  // estado para habilitar o deshabilitar los inputs de fecha y hora
+  const [activoInput, setActivoInput] = useState(false);
+
+  // estado para la hora y fecha actual, se actualiza cada segundo si el input está activo
+  const { hora, fecha } = useDateNow(activoInput);
+
+  // estado para la ruta seleccionada
+  const [rutas_autorizadas, setrutas_autorizadas] = useState<number | null>(
+    null,
+  );
+
+  // estado para el eco ingresado
+  const [eco, setEco] = useState<number | null>(null);
+  // estado para los datos del eco obtenidos desde el hook useEcoEstado
+  const { estado, loading, error } = useEcoEstado(eco);
+
+  // Función para manejar el cambio del checkbox que habilita o deshabilita los inputs de fecha y hora
+  const handleChangeInput = () => {
+    setActivoInput(!activoInput);
+  };
 
   // Busca el objeto motivo seleccionado a partir del id
   const motivoObj = motivosOptions.find((m) => m.value === motivoSeleccionado);
@@ -51,7 +82,7 @@ export const FormularioDespacho = () => {
           }
           className="text-center"
           style={{
-            backgroundColor: "#bae4b1d7",
+            backgroundColor: "#d4d4d4f1",
             fontSize: "14px",
             padding: "0rem 2rem 2rem 2rem",
             position: "relative",
@@ -78,7 +109,23 @@ export const FormularioDespacho = () => {
             {/* Input para el campo "Económico" */}
             <div className="flex align-items-center gap-3">
               <span className="p-float-label">
-                <InputText id="username" className="w-full md:w-14rem" />
+                <InputText
+                  value={eco ?? ""}
+                  onChange={(e) => {
+                    const val = Number(e.target.value);
+                    setEco(isNaN(val) || val <= 0 ? null : val);
+                  }}
+                  placeholder="Económico"
+                />
+                {loading && <span>Cargando...</span>}
+                {error && <span style={{ color: "red" }}>{error}</span>}
+                {estado && (
+                  <div className="mt-2 text-left">
+                    <b>id:</b> {estado.id}
+                    <b>Estado actual:</b> {estado.eco} <br />
+                    <b>Motivo:</b> {estado.motivo_desc}
+                  </div>
+                )}
                 <label htmlFor="username">Economico</label>
               </span>
             </div>
@@ -120,7 +167,6 @@ export const FormularioDespacho = () => {
                     options={plantaPosturaOptions}
                     optionLabel="label"
                     optionValue="value"
-                    placeholder="Motivo"
                     className="w-full md:w-14rem"
                   />
                   <label htmlFor="dd-city">Eco de</label>
@@ -135,12 +181,12 @@ export const FormularioDespacho = () => {
 
                 <span className="p-float-label">
                   <Dropdown
-                    value={plantaPostura}
-                    onChange={(e) => setPlantaPostura(e.value)}
-                    options={plantaPosturaOptions}
+                    value={modalidadSeleccionada}
+                    onChange={(e) => setModalidadSeleccionada(e.value)}
+                    options={modalidadesOptions}
+                    filter
                     optionLabel="label"
                     optionValue="value"
-                    placeholder="Motivo"
                     className="w-full md:w-14rem"
                   />
                   <label htmlFor="dd-city">Modalidad</label>
@@ -148,13 +194,13 @@ export const FormularioDespacho = () => {
 
                 <span className="p-float-label">
                   <Dropdown
-                    value={plantaPostura}
-                    onChange={(e) => setPlantaPostura(e.value)}
-                    options={plantaPosturaOptions}
+                    value={rutas_autorizadas}
+                    onChange={(e) => setrutas_autorizadas(e.value)}
+                    options={rutasOptions}
                     optionLabel="label"
-                    optionValue="value"
-                    placeholder="Motivo"
+                    filter
                     className="w-full md:w-14rem"
+                    panelStyle={{ maxWidth: "500px" }}
                   />
                   <label htmlFor="dd-city">Ruta</label>
                 </span>
@@ -162,7 +208,15 @@ export const FormularioDespacho = () => {
 
               <div className="flex justify-content-center gap-4 mt-5">
                 <span className="p-float-label">
-                  <InputText id="credencial" className="w-full md:w-14rem" />
+                  <Dropdown
+                    value={rutas_autorizadas}
+                    onChange={(e) => setrutas_autorizadas(e.value)}
+                    options={rutasOptions}
+                    optionLabel="label"
+                    filter
+                    className="w-full md:w-14rem"
+                    panelStyle={{ maxWidth: "500px" }}
+                  />
                   <label htmlFor="credencial">CC</label>
                 </span>
 
@@ -170,8 +224,33 @@ export const FormularioDespacho = () => {
                   <InputMask
                     mask="12:00:00 pm"
                     placeholder="Entrada de Operador"
-                  />{" "}
+                  />
                   <label htmlFor="credencial">Entrada de Operador</label>
+                </span>
+                <div className="flex align-items-center gap-3">
+                  <Checkbox
+                    onChange={handleChangeInput}
+                    checked={activoInput}
+                  ></Checkbox>
+                </div>
+                <span className="p-float-label">
+                  <InputMask
+                    value={hora}
+                    mask="99:99:99"
+                    disabled={!activoInput}
+                  />
+                  <label htmlFor="credencial">Hora</label>
+                </span>
+              </div>
+
+              <div className="flex justify-content-center gap-4 mt-5">
+                <span className="p-float-label">
+                  <InputMask
+                    value={fecha}
+                    mask="99/99/9999"
+                    disabled={!activoInput}
+                  />
+                  <label htmlFor="credencial">Fecha</label>
                 </span>
               </div>
             </>
@@ -179,7 +258,7 @@ export const FormularioDespacho = () => {
 
           {/* Botones de acción */}
           <div className="mt-5 gap-4 flex justify-content-center">
-            <Button label="Enviar" />
+            <Button label="Enviar" raised />
             <Button label="Limpiar" severity="danger" />
           </div>
         </Card>
