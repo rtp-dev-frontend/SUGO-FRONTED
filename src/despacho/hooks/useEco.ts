@@ -1,32 +1,38 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getPvEstados } from "../services/pv_ecoServices";
 
 export function useEcoEstado(eco: number | null) {
-  const [estado, setEstado] = useState(null);
+  const [estado, setEstado] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("useEcoEstado - eco changed:", eco); // Debug: Verificar el valor de eco al cambiar
     if (!eco) {
       setEstado(null);
       return;
     }
-
     setLoading(true);
-    setError(null);
-
     getPvEstados(eco)
       .then((data) => {
-        setEstado(Array.isArray(data) ? data[0] : data);
+        // Ajuste aquí:
+        const results = data?.results || [];
+        if (Array.isArray(results) && results.length > 0) {
+          // Ordena por fecha descendente y toma el primero
+          const ultimo = results.sort(
+            (a, b) =>
+              new Date(b.momento).getTime() - new Date(a.momento).getTime(),
+          )[0];
+          setEstado(ultimo);
+        } else {
+          setEstado(null);
+        }
+        setLoading(false);
       })
       .catch((err) => {
-        setError(err.message);
-      })
-      .finally(() => {
+        setError("No se pudo obtener el estado del eco");
         setLoading(false);
       });
-  }, [eco]); // Aquí estaba el error principal de llaves y paréntesis
+  }, [eco]);
 
   return { estado, loading, error };
 }

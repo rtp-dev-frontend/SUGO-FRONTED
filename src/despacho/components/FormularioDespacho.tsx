@@ -73,195 +73,205 @@ export const FormularioDespacho = () => {
 
   return (
     <>
-      <div className="flex justify-content-center mt-4 mb-5">
-        <Card
-          title={
-            <span className="titulo-caseta">
-              Registrar Despacho del económico
-            </span>
-          }
-          className="text-center"
-          style={{
-            backgroundColor: "#d4d4d4f1",
-            fontSize: "14px",
-            padding: "0rem 2rem 2rem 2rem",
-            position: "relative",
-            maxWidth: "800px",
-            borderRadius: "20px",
-            width: "100%",
-          }}
-        >
-          {/* Primera fila: Módulo, Económico y Motivo */}
-          <div className="flex gap-4">
-            {/* Dropdown para seleccionar el módulo */}
-            <span className="p-float-label">
-              <Dropdown
-                inputId="dd-city"
-                value={selectModulo}
-                onChange={(e) => setSelectModulo(e.value)}
-                options={modulosOptions}
-                optionLabel="label"
-                className="w-full md:w-14rem"
-              />
-              <label htmlFor="dd-city">Modulo</label>
-            </span>
-
-            {/* Input para el campo "Económico" */}
-            <div className="flex align-items-center gap-3">
+      <div style={{ position: "relative", width: "100%", minHeight: "350px" }}>
+        {/* Estado fuera del flex, centrado */}
+        {estado && (
+          <div
+            style={{
+              position: "absolute",
+              left: "120px", // Ajusta según tu diseño
+              top: "50px",
+              zIndex: 2,
+            }}
+          >
+            <div
+              style={{
+                background: "#f4f4f4",
+                padding: "1.5rem 1rem",
+                borderRadius: "10px",
+                minWidth: "300px",
+                fontSize: "1.1rem",
+                fontWeight: 500,
+              }}
+            >
+              <b>id:</b> {estado.id} <br />
+              <b>Estado actual:</b> {estado.eco} <br />
+              <b>Motivo:</b> {estado.motivo_desc}
+            </div>
+          </div>
+        )}
+        <div className="flex justify-content-center">
+          <Card
+            title={
+              <span className="titulo-caseta">
+                Registrar Despacho del económico
+              </span>
+            }
+            className="text-center"
+            style={{
+              backgroundColor: "#d4d4d4f1",
+              fontSize: "14px",
+              padding: "0rem 2rem 2rem 2rem",
+              position: "relative",
+              maxWidth: "800px",
+              borderRadius: "20px",
+              width: "100%",
+            }}
+          >
+            {/* Primera fila: Módulo, Económico y Motivo */}
+            <div className="flex gap-4">
+              {/* Dropdown para seleccionar el módulo */}
               <span className="p-float-label">
-                <InputText
-                  value={eco ?? ""}
-                  onChange={(e) => {
-                    const val = Number(e.target.value);
-                    setEco(isNaN(val) || val <= 0 ? null : val);
-                  }}
-                  placeholder="Económico"
+                <Dropdown
+                  inputId="dd-city"
+                  value={selectModulo}
+                  onChange={(e) => setSelectModulo(e.value)}
+                  options={modulosOptions}
+                  optionLabel="label"
+                  className="w-full md:w-14rem"
                 />
-                {loading && <span>Cargando...</span>}
-                {error && <span style={{ color: "red" }}>{error}</span>}
-                {estado && (
-                  <div className="mt-2 text-left">
-                    <b>id:</b> {estado.id}
-                    <b>Estado actual:</b> {estado.eco} <br />
-                    <b>Motivo:</b> {estado.motivo_desc}
-                  </div>
-                )}
-                <label htmlFor="username">Economico</label>
+                <label htmlFor="dd-city">Modulo</label>
+              </span>
+
+              {/* Input para el campo "Económico" */}
+              <div className="flex align-items-center gap-3">
+                <span className="p-float-label">
+                  <InputText
+                    value={eco !== null ? String(eco) : ""} // <-- aquí el cambio
+                    onChange={(e) => {
+                      const val = Number(e.target.value);
+                      setEco(isNaN(val) || val <= 0 ? null : val);
+                    }}
+                    placeholder="Económico"
+                  />
+                  <label htmlFor="username">Economico</label>
+                </span>
+              </div>
+
+              {/* Dropdown para seleccionar el motivo */}
+              <span className="p-float-label">
+                <Dropdown
+                  value={motivoSeleccionado}
+                  onChange={(e) => setMotivoSeleccionado(e.value)}
+                  options={motivosOptions}
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Motivo"
+                  className="w-full md:w-14rem"
+                />
+                <label htmlFor="dd-city">Motivo</label>
               </span>
             </div>
 
-            {/* Dropdown para seleccionar el motivo */}
-            <span className="p-float-label">
-              <Dropdown
-                value={motivoSeleccionado}
-                onChange={(e) => setMotivoSeleccionado(e.value)}
-                options={motivosOptions}
-                optionLabel="label"
-                optionValue="value"
-                placeholder="Motivo"
-                className="w-full md:w-14rem"
-              />
-              <label htmlFor="dd-city">Motivo</label>
-            </span>
-          </div>
-
-          {/* Inputs adicionales que solo aparecen si el motivo es "SERVICIO" */}
-          {motivoObj?.desc?.trim().toUpperCase() === "SERVICIO" && (
-            <>
-              <div className="flex gap-4 mt-5">
-                {/* Input para "Credencial" */}
-                <span className="p-float-label">
-                  <InputText id="credencial" className="w-full md:w-14rem" />
-                  <label htmlFor="credencial">Credencial</label>
-                </span>
-                {/* Input para "Turno" */}
-                <span className="p-float-label">
-                  <InputText id="credencial" className="w-full md:w-14rem" />
-                  <label htmlFor="credencial">Turno</label>
-                </span>
-                {/* Otro dropdown de motivo (parece un error, podrías cambiarlo por otro campo si es necesario) */}
-                <span className="p-float-label">
-                  <Dropdown
-                    value={plantaPostura}
-                    onChange={(e) => setPlantaPostura(e.value)}
-                    options={plantaPosturaOptions}
-                    optionLabel="label"
-                    optionValue="value"
-                    className="w-full md:w-14rem"
-                  />
-                  <label htmlFor="dd-city">Eco de</label>
-                </span>
-              </div>
-
-              <div className="flex gap-4 mt-5">
-                <span className="p-float-label">
-                  <InputText id="credencial" className="w-full md:w-14rem" />
-                  <label htmlFor="credencial">No. Extintor</label>
-                </span>
-
-                <span className="p-float-label">
-                  <Dropdown
-                    value={modalidadSeleccionada}
-                    onChange={(e) => setModalidadSeleccionada(e.value)}
-                    options={modalidadesOptions}
-                    filter
-                    optionLabel="label"
-                    optionValue="value"
-                    className="w-full md:w-14rem"
-                  />
-                  <label htmlFor="dd-city">Modalidad</label>
-                </span>
-
-                <span className="p-float-label">
-                  <Dropdown
-                    value={rutas_autorizadas}
-                    onChange={(e) => setrutas_autorizadas(e.value)}
-                    options={rutasOptions}
-                    optionLabel="label"
-                    filter
-                    className="w-full md:w-14rem"
-                    panelStyle={{ maxWidth: "500px" }}
-                  />
-                  <label htmlFor="dd-city">Ruta</label>
-                </span>
-              </div>
-
-              <div className="flex justify-content-center gap-4 mt-5">
-                <span className="p-float-label">
-                  <Dropdown
-                    value={rutas_autorizadas}
-                    onChange={(e) => setrutas_autorizadas(e.value)}
-                    options={rutasOptions}
-                    optionLabel="label"
-                    filter
-                    className="w-full md:w-14rem"
-                    panelStyle={{ maxWidth: "500px" }}
-                  />
-                  <label htmlFor="credencial">CC</label>
-                </span>
-
-                <span className="p-float-label">
-                  <InputMask
-                    mask="12:00:00 pm"
-                    placeholder="Entrada de Operador"
-                  />
-                  <label htmlFor="credencial">Entrada de Operador</label>
-                </span>
-                <div className="flex align-items-center gap-3">
-                  <Checkbox
-                    onChange={handleChangeInput}
-                    checked={activoInput}
-                  ></Checkbox>
+            {/* Inputs adicionales que solo aparecen si el motivo es "SERVICIO" */}
+            {motivoObj?.desc?.trim().toUpperCase() === "SERVICIO" && (
+              <>
+                <div className="flex gap-4 mt-5">
+                  {/* Input para "Credencial" */}
+                  <span className="p-float-label">
+                    <InputText id="credencial" className="w-full md:w-14rem" />
+                    <label htmlFor="credencial">Credencial</label>
+                  </span>
+                  {/* Input para "Turno" */}
+                  <span className="p-float-label">
+                    <InputText id="credencial" className="w-full md:w-14rem" />
+                    <label htmlFor="credencial">Turno</label>
+                  </span>
+                  {/* Otro dropdown de motivo (parece un error, podrías cambiarlo por otro campo si es necesario) */}
+                  <span className="p-float-label">
+                    <Dropdown
+                      value={plantaPostura}
+                      onChange={(e) => setPlantaPostura(e.value)}
+                      options={plantaPosturaOptions}
+                      optionLabel="label"
+                      optionValue="value"
+                      className="w-full md:w-14rem"
+                    />
+                    <label htmlFor="dd-city">Eco de</label>
+                  </span>
                 </div>
-                <span className="p-float-label">
-                  <InputMask
-                    value={hora}
-                    mask="99:99:99"
-                    disabled={!activoInput}
-                  />
-                  <label htmlFor="credencial">Hora</label>
-                </span>
-              </div>
 
-              <div className="flex justify-content-center gap-4 mt-5">
-                <span className="p-float-label">
-                  <InputMask
-                    value={fecha}
-                    mask="99/99/9999"
-                    disabled={!activoInput}
-                  />
-                  <label htmlFor="credencial">Fecha</label>
-                </span>
-              </div>
-            </>
-          )}
+                <div className="flex gap-4 mt-5">
+                  <span className="p-float-label">
+                    <InputText id="credencial" className="w-full md:w-14rem" />
+                    <label htmlFor="credencial">No. Extintor</label>
+                  </span>
 
-          {/* Botones de acción */}
-          <div className="mt-5 gap-4 flex justify-content-center">
-            <Button label="Enviar" raised />
-            <Button label="Limpiar" severity="danger" />
-          </div>
-        </Card>
+                  <span className="p-float-label">
+                    <Dropdown
+                      value={modalidadSeleccionada}
+                      onChange={(e) => setModalidadSeleccionada(e.value)}
+                      options={modalidadesOptions}
+                      filter
+                      optionLabel="label"
+                      optionValue="value"
+                      className="w-full md:w-14rem"
+                    />
+                    <label htmlFor="dd-city">Modalidad</label>
+                  </span>
+
+                  <span className="p-float-label">
+                    <Dropdown
+                      value={rutas_autorizadas}
+                      onChange={(e) => setrutas_autorizadas(e.value)}
+                      options={rutasOptions}
+                      optionLabel="label"
+                      filter
+                      className="w-full md:w-14rem"
+                      panelStyle={{ maxWidth: "500px" }}
+                    />
+                    <label htmlFor="dd-city">Ruta</label>
+                  </span>
+                </div>
+
+                <div className="flex justify-content-center gap-4 mt-5">
+                  <span className="p-float-label">
+                    <Dropdown
+                      value={rutas_autorizadas}
+                      onChange={(e) => setrutas_autorizadas(e.value)}
+                      options={rutasOptions}
+                      optionLabel="label"
+                      filter
+                      className="w-full md:w-14rem"
+                      panelStyle={{ maxWidth: "500px" }}
+                    />
+                    <label htmlFor="credencial">CC</label>
+                  </span>
+
+                  <div className="flex align-items-center gap-3">
+                    <Checkbox
+                      onChange={handleChangeInput}
+                      checked={activoInput}
+                    ></Checkbox>
+                  </div>
+                  <span className="p-float-label">
+                    <InputMask
+                      value={hora}
+                      mask="99:99:99"
+                      disabled={!activoInput}
+                    />
+                    <label htmlFor="credencial">Hora</label>
+                  </span>
+
+                  <span className="p-float-label">
+                    <InputMask
+                      value={fecha}
+                      mask="99/99/9999"
+                      disabled={!activoInput}
+                    />
+                    <label htmlFor="credencial">Fecha</label>
+                  </span>
+                </div>
+              </>
+            )}
+
+            {/* Botones de acción */}
+            <div className="mt-5 gap-4 flex justify-content-center">
+              <Button label="Enviar" raised />
+              <Button label="Limpiar" severity="danger" />
+            </div>
+          </Card>
+        </div>
       </div>
     </>
   );
