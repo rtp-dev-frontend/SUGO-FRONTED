@@ -1,0 +1,140 @@
+.eco {
+  color: rgb(107, 103, 103);
+  font-size: 1.3rem;
+}
+
+.ruta_modalidad {
+  background-color: #fcf809;
+  border-radius: 6px;
+  width: 86px;
+  font-size: 15px;
+}
+
+.eco_estatus {
+  margin-top: 10px;
+}
+
+.modulo_puerta {
+  font-size: 14px;
+}
+
+.motivo {
+  font-size: 12px;
+  color: seagreen;
+}
+
+.contenedor-formulario-despacho {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.mi-divider .p-divider-horizontal,
+.mi-divider.p-divider-horizontal {
+  border-top: 2px dashed green;
+}
+
+.tabla-centro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.titulo-tabla {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.tabla-centro-datatable .p-datatable-table {
+  margin: 0 auto;
+}
+
+/* --- Contenedor General --- */
+.contenedor-tabla {
+  overflow-x: auto;
+  max-width: 100vw;
+  font-size: 16px;
+  padding: 0 1rem;
+}
+
+.titulo-tabla {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+/* --- Estilos Generales de la Tabla (Sobreescribiendo PrimeReact) --- */
+.tabla-centro-datatable .p-datatable-thead > tr > th {
+  background-color: #f8f9fa;
+  color: #495057;
+  padding: 1rem 0.5rem !important;
+  font-size: 13px !important;
+  border-bottom: 2px solid #dee2e6;
+  white-space: nowrap; /* Evita que el header se rompa feo */
+}
+
+.tabla-centro-datatable .p-datatable-tbody > tr > td {
+  padding: 0.75rem 0.5rem !important;
+  font-size: 12px !important;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* Inputs de filtro dentro de la tabla */
+.tabla-centro-datatable .p-column-filter-row .p-inputtext {
+  width: 100%;
+  font-size: 12px !important;
+  padding: 0.4rem !important;
+  border-radius: 4px;
+}
+
+/* Ocultar el icono de menú del filtro para que se vea limpio como la foto 2 */
+.tabla-centro-datatable .p-column-filter-menu-button,
+.tabla-centro-datatable .p-column-filter-clear-button {
+  display: none !important;
+}
+
+/* --- Colores de Filas (Row ClassName) --- */
+
+/* Fila Azul (Recepción) */
+.fila-recepcion {
+  color: #007ad9 !important; /* Azul PrimeReact */
+  background-color: #ffffff;
+}
+.fila-recepcion td {
+  color: #007ad9 !important;
+  font-weight: 600;
+}
+
+/* Fila Verde (Despacho / Servicio) */
+.fila-despacho {
+  color: #28a745 !important; /* Verde Bootstrap/Standard */
+  background-color: #ffffff;
+}
+.fila-despacho td {
+  color: #28a745 !important;
+  font-weight: 600;
+}
+
+/* --- Badges de Estatus --- */
+.badge-estatus {
+  display: inline-block;
+  padding: 0.25em 0.8em;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-estatus.disponible {
+  color: #155724;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+}
+
+.badge-estatus.no-disponible {
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+}

@@ -14,7 +14,6 @@ export function useEcoEstado(eco: number | null) {
     setLoading(true);
     getPvEstados(eco)
       .then((data) => {
-        // Ajuste aquí:
         const results = data?.results || [];
         if (Array.isArray(results) && results.length > 0) {
           // Ordena por fecha descendente y toma el primero

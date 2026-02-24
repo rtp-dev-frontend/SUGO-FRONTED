@@ -8,6 +8,8 @@ import { InputMask } from "primereact/inputmask"; // InputMask de PrimeReact par
 import { Checkbox } from "primereact/checkbox"; // Checkbox de PrimeReact para opciones booleanas
 import { useDateNow } from "../hooks/useDateNow"; // importa el hook directamente
 import { useEcoEstado } from "../hooks/useEco"; // Hook personalizado para obtener el estado del eco
+import { Tabla_pvEstados } from "./Tabla_pvEstados";
+import "../css/despacho.css";
 
 export const FormularioDespacho = () => {
   // Definición del tipo para las opciones de motivo
@@ -26,6 +28,11 @@ export const FormularioDespacho = () => {
     { label: "Planta", value: "planta" },
     { label: "Postura", value: "postura" },
   ];
+
+  const estado_eco = {
+    1: "Disponible",
+    2: "No disponible",
+  };
 
   // Obtiene las opciones de módulos y motivos desde el hook personalizado
   const { modulosOptions, motivosOptions, modalidadesOptions, rutasOptions } =
@@ -62,7 +69,6 @@ export const FormularioDespacho = () => {
   const [eco, setEco] = useState<number | null>(null);
   // estado para los datos del eco obtenidos desde el hook useEcoEstado
   const { estado, loading, error } = useEcoEstado(eco);
-
   // Función para manejar el cambio del checkbox que habilita o deshabilita los inputs de fecha y hora
   const handleChangeInput = () => {
     setActivoInput(!activoInput);
@@ -73,7 +79,7 @@ export const FormularioDespacho = () => {
 
   return (
     <>
-      <div style={{ position: "relative", width: "100%", minHeight: "350px" }}>
+      <div className="contenedor-formulario-despacho">
         {/* Estado fuera del flex, centrado */}
         {estado && (
           <div
@@ -86,7 +92,7 @@ export const FormularioDespacho = () => {
           >
             <div
               style={{
-                background: "#f4f4f4",
+                background: "#bad3f0",
                 padding: "1.5rem 1rem",
                 borderRadius: "10px",
                 minWidth: "300px",
@@ -94,9 +100,19 @@ export const FormularioDespacho = () => {
                 fontWeight: 500,
               }}
             >
-              <b>id:</b> {estado.id} <br />
-              <b>Estado actual:</b> {estado.eco} <br />
-              <b>Motivo:</b> {estado.motivo_desc}
+              <div>{}</div>
+              <b className="eco"> {estado.eco} </b>
+              <br />
+              <div className="ruta_modalidad">{estado.ruta_modalidad}</div>
+              <div className="eco_estatus">
+                {estado_eco[Number(estado.eco_estatus)]}
+              </div>
+              <b className="modulo_puerta">En SERVICIO por </b>
+              {estado.modulo_puerta} <br />
+              <b className="modulo_puerta">Desde: {estado.momento}</b> <br />
+              <b className="motivo">
+                Motivo: {estado.motivo_desc || "Sin motivo"}
+              </b>
             </div>
           </div>
         )}
@@ -237,33 +253,41 @@ export const FormularioDespacho = () => {
                     />
                     <label htmlFor="credencial">CC</label>
                   </span>
-
-                  <div className="flex align-items-center gap-3">
-                    <Checkbox
-                      onChange={handleChangeInput}
-                      checked={activoInput}
-                    ></Checkbox>
-                  </div>
-                  <span className="p-float-label">
-                    <InputMask
-                      value={hora}
-                      mask="99:99:99"
-                      disabled={!activoInput}
-                    />
-                    <label htmlFor="credencial">Hora</label>
-                  </span>
-
-                  <span className="p-float-label">
-                    <InputMask
-                      value={fecha}
-                      mask="99/99/9999"
-                      disabled={!activoInput}
-                    />
-                    <label htmlFor="credencial">Fecha</label>
-                  </span>
                 </div>
               </>
             )}
+
+            {/* Inputs de checkbox, hora y fecha: SIEMPRE visibles debajo de módulo, eco y motivo */}
+            <div className="flex justify-content-center gap-4 mt-5 align-items-end">
+              <div
+                className="flex flex-column align-items-center"
+                style={{ minWidth: 60 }}
+              >
+                <label style={{ fontSize: 13, marginBottom: 2 }}>Editar</label>
+                <Checkbox
+                  onChange={handleChangeInput}
+                  checked={activoInput}
+                ></Checkbox>
+              </div>
+              <span className="p-float-label" style={{ minWidth: 180 }}>
+                <InputMask
+                  value={hora}
+                  mask="99:99:99"
+                  disabled={!activoInput}
+                  style={{ width: "100%" }}
+                />
+                <label htmlFor="credencial">Hora</label>
+              </span>
+              <span className="p-float-label" style={{ minWidth: 180 }}>
+                <InputMask
+                  value={fecha}
+                  mask="99/99/9999"
+                  disabled={!activoInput}
+                  style={{ width: "100%" }}
+                />
+                <label htmlFor="credencial">Fecha</label>
+              </span>
+            </div>
 
             {/* Botones de acción */}
             <div className="mt-5 gap-4 flex justify-content-center">
@@ -273,6 +297,9 @@ export const FormularioDespacho = () => {
           </Card>
         </div>
       </div>
+
+      {/* tabla de pv estados traida como componente */}
+      <Tabla_pvEstados />
     </>
   );
 };
