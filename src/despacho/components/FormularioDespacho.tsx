@@ -67,8 +67,12 @@ export const FormularioDespacho = () => {
 
   // estado para el eco ingresado
   const [eco, setEco] = useState<number | null>(null);
+  // estado para indicar si ya se ha buscado el eco, para evitar mostrar el mensaje de error antes de la primera búsqueda
+  const [ecoBuscado, setEcoBuscado] = useState(false);
+
   // estado para los datos del eco obtenidos desde el hook useEcoEstado
   const { estado, loading, error } = useEcoEstado(eco);
+
   // Función para manejar el cambio del checkbox que habilita o deshabilita los inputs de fecha y hora
   const handleChangeInput = () => {
     setActivoInput(!activoInput);
@@ -119,8 +123,8 @@ export const FormularioDespacho = () => {
         <div className="flex justify-content-center">
           <Card
             title={
-              <span className="titulo-caseta">
-                Registrar Despacho del económico
+              <span className="titulo-caseta ">
+                Registro de Despacho del económico
               </span>
             }
             className="text-center"
@@ -135,7 +139,7 @@ export const FormularioDespacho = () => {
             }}
           >
             {/* Primera fila: Módulo, Económico y Motivo */}
-            <div className="flex gap-4">
+            <div className="flex gap-4 mt-4">
               {/* Dropdown para seleccionar el módulo */}
               <span className="p-float-label">
                 <Dropdown
@@ -157,9 +161,21 @@ export const FormularioDespacho = () => {
                     onChange={(e) => {
                       const val = Number(e.target.value);
                       setEco(isNaN(val) || val <= 0 ? null : val);
+                      setEcoBuscado(false);
                     }}
                     placeholder="Económico"
                   />
+                  {ecoBuscado && eco && !loading && !estado && (
+                    <div
+                      style={{
+                        color: "red",
+                        marginTop: 10,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      El económico {eco} no existe o no tiene registros.
+                    </div>
+                  )}
                   <label htmlFor="username">Economico</label>
                 </span>
               </div>
