@@ -104,7 +104,6 @@ export const FormularioDespacho = () => {
                 fontWeight: 500,
               }}
             >
-              <div>{}</div>
               <b className="eco"> {estado.eco} </b>
               <br />
               <div className="ruta_modalidad">{estado.ruta_modalidad}</div>

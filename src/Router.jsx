@@ -8,6 +8,7 @@ import { RolPage } from "./ROL-ECOyOP";
 import { Rol } from "./rol/Rol";
 import { Caseta_ } from "./caseta_";
 import { Despacho } from "./despacho";
+import { Recepcion } from "./recepcion";
 // import { PruebasPage } from './pruebas'
 import useAuthStore from "./shared/auth/useAuthStore";
 import { Container, Header } from "./shared/components";
@@ -28,6 +29,7 @@ export const Router = () => {
   const logged = useAuthStore((state) => state.logged);
   const {
     sugo12Despacho,
+    sugo12recepcion,
     sugo12cas,
     sugo12caseta,
     sugo12cum,
@@ -39,6 +41,7 @@ export const Router = () => {
   if (
     !(
       sugo12Despacho ||
+        sugo12recepcion ||
       sugo12cas ||
       sugo12caseta ||
       sugo12cum ||
@@ -66,8 +69,9 @@ export const Router = () => {
           } */}
 
           {sugo12cas && <Route path="/caseta" element={<CasetaPage />} />}
-          {sugo12Despacho && <Route path="/despacho" element={<Despacho />} />}
           {sugo12caseta && <Route path="/caseta_" element={<Caseta_ />} />}
+          {sugo12Despacho && <Route path="/despacho" element={<Despacho />} />}
+          {sugo12recepcion && <Route path="/recepcion" element={<Recepcion />} />}
           {sugo12rol && <Route path="/rol" element={<Rol />} />}
 
           {/* <Route path='/dunderm' element={<UnderConstructionPage/>} />

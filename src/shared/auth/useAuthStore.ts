@@ -21,6 +21,7 @@ interface Store {
     sugo4rol0p10t1: boolean;
     // #! Agregar nuevos permisos
     sugo12Despacho: boolean;
+    sugo12recepcion: boolean;
     sugo12reportesGaceta: boolean;
     sugo12cas: boolean;
 
@@ -59,6 +60,7 @@ const initialState = {
     sugo4rol0p10t1: false,
     //!
     sugo12Despacho: false,
+    sugo12recepcion: false,
     sugo12cas: false,
     sugo12reportesGaceta: false,
     //!

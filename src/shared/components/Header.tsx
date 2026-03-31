@@ -31,6 +31,7 @@ export const Header = ({ links = undefined }: { links?: any[] }) => {
     sugo12rol,
     sugo12capRol,
     sugo12reportesGaceta,
+    sugo12recepcion
   } = useAuthStore((state) => state.permisosSUGO);
   const navigate = useNavigate();
 
@@ -60,6 +61,15 @@ export const Header = ({ links = undefined }: { links?: any[] }) => {
       icon: "pi pi-check",
       command: () => {
         navigate("/Despacho");
+      },
+    });
+  // Recepción
+  if (sugo12recepcion)
+    allMenu.push({
+      label: "Recepción",
+      icon: "pi pi-car",
+      command: () => {
+        navigate("/recepcion");
       },
     });
   // caseta
